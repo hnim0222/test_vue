@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto p-4">
+  <div class="mx-auto p-4">
     <div v-if="loading" class="text-center text-lg font-semibold">Đang tải dữ liệu...</div>
     <div v-else-if="error" class="text-red-500 text-center text-lg">Lỗi tải dữ liệu!</div>
     <div v-else>
@@ -10,7 +10,7 @@
             v-for="(image, index) in chapter?.chapter_image"
             :key="index"
             :src="`${domainCDN}/${chapter?.chapter_path}/${image.image_file}`"
-            class="w-full max-w-2xl object-cover mb-4 shadow-lg rounded-md"
+            class="w-full max-w-2xl object-cover"
             :alt="`Trang ${image.image_page}`"
         />
       </div>
