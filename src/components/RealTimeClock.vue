@@ -1,6 +1,6 @@
 <template>
-  <div class="clock container">
-    <p class="text-black text-3xl flex justify-center items-center border border-0.125rem border-black px-4 py-2 w-40 rounded-md">{{ currentTime }}</p>
+  <div class="clock">
+    <p class=time>{{ currentTime }}</p>
   </div>
 </template>
 
@@ -33,5 +33,20 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* Add any styles here */
+.clock {
+  font-family: 'Share Tech Mono', monospace;
+  color: #ffffff;
+  text-align: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: #60c4e4;
+  text-shadow: 0 0 20px rgba(10, 175, 230, 1),  0 0 20px rgba(10, 175, 230, 0);
+}
+  .time {
+    letter-spacing: 0.05em;
+    font-size: 80px;
+    padding: 5px 0;
+  }
 </style>

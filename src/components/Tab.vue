@@ -23,7 +23,10 @@ import { ref } from 'vue';
 const tabs = [
   { name: 'clock', label: 'Real Time Clock' },
   { name: 'weather', label: 'Weather' },
-  { name: 'quote', label: 'Quote' }
+  { name: 'quote', label: 'Quote' },
+  {
+    name: 'comic', label: 'Comic'
+  }
 ];
 
 const currentTab = ref('clock');

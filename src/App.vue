@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
 import RealTimeClock from './components/RealTimeClock.vue'
 import Quote from "./components/Quote.vue"
 import Weather from "./components/Weather.vue"
 import Tabs from "./components/Tab.vue"
+import Comic from "@/components/Comic.vue";
 </script>
 
 <template class="bg-white">
@@ -18,6 +17,9 @@ import Tabs from "./components/Tab.vue"
       </template>
       <template #quote>
         <Quote />
+      </template>
+      <template #comic>
+        <Comic />
       </template>
     </Tabs>
   </main>
