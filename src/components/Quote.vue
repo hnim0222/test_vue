@@ -1,4 +1,13 @@
-<script setup>
+<template>
+  <div class="quote-card container">
+    <p class="quote">"{{ quote }}"</p>
+    <p class="translated-quote">"{{ translatedQuote }}"</p>
+    <p class="author" v-if="author">— {{ author }} —</p>
+    <button @click="fetchQuote">Trích dẫn mới</button>
+  </div>
+</template>
+
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
@@ -6,16 +15,7 @@ const quote = ref('');
 const author = ref('');
 const translatedQuote = ref('');
 
-const translateQuote = async (text) => {
-  try {
-    const response = await axios.get('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=en|vi');
-    translatedQuote.value = response.data.responseData.translatedText;
-  } catch (error) {
-    console.error('Translation error:', error);
-    translatedQuote.value = 'Không thể dịch trích dẫn.';
-  }
-};
-
+// Fetch a random quote
 const fetchQuote = async () => {
   try {
     const response = await axios.get('https://api.allorigins.win/get?url=' + encodeURIComponent('https://zenquotes.io/api/random'));
@@ -23,7 +23,7 @@ const fetchQuote = async () => {
     quote.value = data.q;
     author.value = data.a;
 
-    await translateQuote(quote.value);
+    await translateQuote(quote.value); // Translate the quote after fetching it
   } catch (error) {
     console.error('Error fetching quote:', error);
     quote.value = 'Không thể tải trích dẫn. Vui lòng thử lại!';
@@ -32,29 +32,22 @@ const fetchQuote = async () => {
   }
 };
 
+// Translate quote from English to Vietnamese
+const translateQuote = async (text: string) => {
+  try {
+    const response = await axios.get('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=en|vi');
+    translatedQuote.value = response.data.responseData.translatedText || 'Không thể dịch trích dẫn.';
+  } catch (error) {
+    console.error('Translation error:', error);
+    translatedQuote.value = 'Không thể dịch trích dẫn.';
+  }
+};
+
+// Initial quote fetch on mount
 onMounted(fetchQuote);
 </script>
 
-
-<template>
-    <div class="quote-card container">
-      <p class="quote">"{{ quote }}"</p>
-      <p class="translated-quote">"{{ translatedQuote }}"</p>
-      <p class="author" v-if="author">— {{ author }} —</p>
-      <button @click="fetchQuote">Trích dẫn mới</button>
-    </div>
-</template>
-
 <style scoped>
-.quote-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f4f4f4;
-  padding: 20px;
-}
-
 .quote-card {
   max-width: 400px;
   padding: 20px;

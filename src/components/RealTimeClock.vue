@@ -4,33 +4,34 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'RealTimeClock',
-  data() {
-    return {
-      currentTime: '',
-      timer: null,
-    };
-  },
-  mounted() {
-    this.updateTime();
-    // Update the time every second
-    this.timer = setInterval(() => {
-      this.updateTime();
-    }, 1000);
-  },
-  beforeUnmount() {
-    // Clear the interval when the component is destroyed
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-  },
-  methods: {
-    updateTime() {
-      const now = new Date();
-      this.currentTime = now.toLocaleTimeString(); // Format the time
-    },
-  },
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+
+// Define a reactive variable for current time
+const currentTime = ref('');
+
+// Function to update the current time
+const updateTime = () => {
+  const now = new Date();
+  currentTime.value = now.toLocaleTimeString(); // Format the time
 };
+
+// Set up interval to update time every second
+let timer: ReturnType<typeof setInterval> | null = null;
+
+onMounted(() => {
+  updateTime(); // Initialize the time on mount
+  timer = setInterval(updateTime, 1000); // Update time every second
+});
+
+onBeforeUnmount(() => {
+  // Clear the interval when the component is unmounted
+  if (timer) {
+    clearInterval(timer);
+  }
+});
 </script>
+
+<style scoped>
+/* Add any styles here */
+</style>

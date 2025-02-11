@@ -32,62 +32,84 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import axios from "axios";
+import { ref, onMounted } from "vue";
 
-export default {
-  data() {
-    return {
-      city: "Hanoi",
-      lat: 21.0245,
-      lon: 105.8412,
-      weatherData: null,
-      openMeteoData: null,
-      error: null,
-      loading: false,
+// Type Definitions
+interface WeatherAPIResponse {
+  location: {
+    name: string;
+    country: string;
+  };
+  current: {
+    temp_c: number;
+    condition: {
+      text: string;
     };
-  },
-  methods: {
-    async getWeather() {
-      this.loading = true;
-      this.error = null;
+    humidity: number;
+    wind_kph: number;
+  };
+}
 
-      try {
-        // Lấy dữ liệu từ WeatherAPI
-        const weatherApiKey = "da6dc0ae918f48db93931327251102";
-        const weatherResponse = await axios.get(
-            `https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${this.city}`
-        );
+interface OpenMeteoResponse {
+  hourly: {
+    temperature_2m: number[];
+    time: string[];
+  };
+}
 
-        this.weatherData = weatherResponse.data;
+// Reactive data properties
+const city = ref("Hanoi");
+const lat = ref(21.0245);
+const lon = ref(105.8412);
+const weatherData = ref<WeatherAPIResponse | null>(null);
+const openMeteoData = ref<OpenMeteoResponse | null>(null);
+const error = ref<string | null>(null);
+const loading = ref(false);
 
-        // Lấy dữ liệu từ Open-Meteo
-        const openMeteoResponse = await axios.get(
-            `https://api.open-meteo.com/v1/forecast?latitude=${this.lat}&longitude=${this.lon}&hourly=temperature_2m&timezone=Asia%2FBangkok`
-        );
-        this.openMeteoData = openMeteoResponse.data;
-      } catch (err) {
-        this.error = "Không thể lấy dữ liệu thời tiết!";
-      } finally {
-        this.loading = false;
-      }
-    },
-    formatDateTime(dateString) {
-      const date = new Date(dateString);
-      return date.toLocaleString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour12: false,
-      });
-    },
-  },
-  mounted() {
-    this.getWeather();
+// Methods
+const getWeather = async () => {
+  loading.value = true;
+  error.value = null;
+
+  try {
+    // Lấy dữ liệu từ WeatherAPI
+    const weatherApiKey = "da6dc0ae918f48db93931327251102";
+    const weatherResponse = await axios.get<WeatherAPIResponse>(
+        `https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${city.value}`
+    );
+    weatherData.value = weatherResponse.data;
+
+    // Lấy dữ liệu từ Open-Meteo
+    const openMeteoResponse = await axios.get<OpenMeteoResponse>(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat.value}&longitude=${lon.value}&hourly=temperature_2m&timezone=Asia%2FBangkok`
+    );
+    openMeteoData.value = openMeteoResponse.data;
+  } catch (err) {
+    error.value = "Không thể lấy dữ liệu thời tiết!";
+  } finally {
+    loading.value = false;
   }
 };
+
+// Utility function to format the date-time
+const formatDateTime = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleString("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour12: false,
+  });
+};
+
+// Fetch weather data on mounted
+onMounted(() => {
+  getWeather();
+});
 </script>
 
 <style scoped>
