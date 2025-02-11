@@ -10,7 +10,7 @@
             v-for="(image, index) in chapter?.chapter_image"
             :key="index"
             :src="`${domainCDN}/${chapter?.chapter_path}/${image.image_file}`"
-            class="w-full max-w-2xl object-cover"
+            class="w-full object-cover"
             :alt="`Trang ${image.image_page}`"
         />
       </div>
