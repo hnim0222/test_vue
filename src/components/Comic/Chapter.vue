@@ -58,7 +58,6 @@ const chapters = ref<any[]>([]);
 const loading = ref(true);
 const comicName = ref('');
 
-// Lưu chương đã chọn từ localStorage
 const selectedChapterName = ref<string>('');
 
 // Phân trang

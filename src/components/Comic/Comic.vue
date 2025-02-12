@@ -14,23 +14,23 @@
         />
       </div>
 
-      <div @click="showControls = true" class="fixed bottom-4 left-4 right-4">
-        <div v-if="showControls" class="flex justify-between items-center bg-white p-1 shadow-lg">
-          <button @click="goToPreviousChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">
-            Previous
-          </button>
+<!--      <div @click="showControls = true" class="fixed bottom-4 left-4 right-4">-->
+<!--        <div v-if="showControls" class="flex justify-between items-center bg-white p-1 shadow-lg">-->
+<!--          <button @click="goToPreviousChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">-->
+<!--            Previous-->
+<!--          </button>-->
 
-          <select v-model="selectedChapter" @change="goToChapter" class="p-2 border rounded-lg text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out">
-            <option v-for="(ch, index) in listChapters" :key="index" :value="ch.chapter_name">
-              Chapter {{ ch.chapter_name }}
-            </option>
-          </select>
+<!--          <select v-model="selectedChapter" @change="goToChapter" class="p-2 border rounded-lg text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out">-->
+<!--            <option v-for="(ch, index) in listChapters" :key="index" :value="ch.chapter_name">-->
+<!--              Chapter {{ ch.chapter_name }}-->
+<!--            </option>-->
+<!--          </select>-->
 
-          <button @click="goToNextChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">
-            Next
-          </button>
-        </div>
-      </div>
+<!--          <button @click="goToNextChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">-->
+<!--            Next-->
+<!--          </button>-->
+<!--        </div>-->
+<!--      </div>-->
 
 
     </div>
@@ -135,7 +135,7 @@ const goToChapter = () => {
     }
 
     // Lưu lại vào localStorage
-    // localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
+    localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
 
     router.push({
       name: 'comic-detail',
@@ -168,10 +168,10 @@ const goToPreviousChapter = () => {
         savedChapters.push({
           slug: slugComic,
           chapterName: previousChapter.chapter_name,
-          chapterApi: previousChapter.chapter_api_data // Lưu chapter_api
+          chapterApi: previousChapter.chapter_api_data
         });
       }
-      // localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
+      localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
 
       router.push({
         name: 'comic-detail',
@@ -210,7 +210,7 @@ const goToNextChapter = () => {
           chapterApi: nextChapter.chapter_api_data
         });
       }
-      // localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
+      localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
 
       router.push({
         name: 'comic-detail',
