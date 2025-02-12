@@ -29,7 +29,7 @@ const tabs = [
   }
 ];
 
-const currentTab = ref('clock');
+const currentTab = ref('comic');
 
 const changeTab = (tab: string) => {
   currentTab.value = tab;
