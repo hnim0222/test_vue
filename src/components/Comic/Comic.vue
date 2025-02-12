@@ -181,7 +181,7 @@ const goToPreviousChapter = () => {
           chapterName: previousChapter.chapter_name
         }
       }).then(() => {
-        window.location.reload(); // Tải lại trang sau khi thay đổi chương
+        window.location.reload();
       });
     }
   }

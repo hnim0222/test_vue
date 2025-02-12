@@ -111,7 +111,6 @@ onMounted(async () => {
       chapters.value = data.data.item.chapters[0].server_data;
     }
 
-    // Kiểm tra xem chương đã chọn từ localStorage
     const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
     const savedChapter = savedChapters.find((ch: any) => ch.slug === props.comicSlug);
     if (savedChapter) {
