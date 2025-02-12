@@ -1,17 +1,9 @@
 <template>
   <div class="weather-container">
     <h2>🌤️ Dữ liệu thời tiết</h2>
-
-    <!-- Nút lấy dữ liệu thời tiết -->
     <button @click="getWeather" class="mt-2 hidden">Lấy dữ liệu thời tiết</button>
-
-    <!-- Hiển thị trạng thái tải -->
     <div v-if="loading">⏳ Đang tải...</div>
-
-    <!-- Hiển thị lỗi nếu có -->
     <div v-if="error" class="error">❌ {{ error }}</div>
-
-    <!-- Dữ liệu từ WeatherAPI -->
     <div v-if="weatherData">
       <h3>📍 {{ weatherData.location.name }}, {{ weatherData.location.country }}</h3>
       <p>🌡️ Nhiệt độ: {{ weatherData.current.temp_c }}°C</p>
@@ -115,11 +107,8 @@ onMounted(() => {
 <style scoped>
 .weather-container {
   max-width: 500px;
-  margin: 40px auto;
   padding: 20px;
-  background-color: #f9f9f9;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 

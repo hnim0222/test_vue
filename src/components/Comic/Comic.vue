@@ -1,9 +1,9 @@
 <template>
-  <div class="mx-auto p-4">
+  <div class="mx-auto">
     <div v-if="loading" class="text-center text-lg font-semibold">Đang tải dữ liệu...</div>
     <div v-else-if="error" class="text-red-500 text-center text-lg">Lỗi tải dữ liệu!</div>
     <div v-else>
-      <h1 class="text-2xl font-bold mb-4">{{ chapter?.comic_name }} - Chương {{ chapter?.chapter_name }}</h1>
+      <h1 class="text-2xl font-bold m-4">{{ chapter?.comic_name }} - Chương {{ chapter?.chapter_name }}</h1>
       <div class="flex flex-col items-center mb-4">
         <img
             v-for="(image, index) in chapter?.chapter_image"
@@ -14,25 +14,36 @@
         />
       </div>
 
-      <div class="fixed bottom-4 left-4 right-4 flex justify-between bg-white">
-        <button @click="goToPreviousChapter" class="bg-blue-500 text-white p-2 rounded">Chương trước</button>
-        <select v-model="selectedChapter" @change="goToChapter" class="p-2 border rounded text-black">
-          <option v-for="(ch, index) in listChapters" :key="index" :value="ch.chapter_name">
-            Chapter {{ ch.chapter_name }}
-          </option>
-        </select>
-        <button @click="goToNextChapter" class="bg-blue-500 text-white p-2 rounded">Chương sau</button>
+      <div @click="showControls = true" class="fixed bottom-4 left-4 right-4">
+        <div v-if="showControls" class="flex justify-between items-center bg-white p-1 shadow-lg">
+          <button @click="goToPreviousChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">
+            Previous
+          </button>
+
+          <select v-model="selectedChapter" @change="goToChapter" class="p-2 border rounded-lg text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out">
+            <option v-for="(ch, index) in listChapters" :key="index" :value="ch.chapter_name">
+              Chapter {{ ch.chapter_name }}
+            </option>
+          </select>
+
+          <button @click="goToNextChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">
+            Next
+          </button>
+        </div>
       </div>
+
 
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+
 const router = useRouter();
+const showControls = ref(false); // Trạng thái hiển thị các phần tử
 
 interface Image {
   image_page: number;
@@ -52,10 +63,10 @@ const chapters = ref<Chapter[]>([]);  // List of chapters
 const domainCDN = ref('');
 const loading = ref(true);
 const error = ref(false);
-const selectedChapter = ref<string>('');
+const selectedChapter = ref<string>(''); // Chương đang chọn
 const listChapters = ref<any[]>([]);
 
-
+// Lấy thông tin chapter từ API
 const fetchChapter = async () => {
   try {
     const chapterApi = router.currentRoute.value.params.chapterApi as string;
@@ -71,6 +82,7 @@ const fetchChapter = async () => {
   }
 };
 
+// Lấy danh sách chương từ API
 const fetchListChapter = async () => {
   try {
     const slugComic = router.currentRoute.value.params.comicSlug as string;
@@ -81,10 +93,16 @@ const fetchListChapter = async () => {
     if (data.data && data.data.item?.chapters?.[0]?.server_data) {
       listChapters.value = data.data.item.chapters[0].server_data;
 
-      const currentChapterName = router.currentRoute.value.params.chapterName as string;
-      const currentChapter = listChapters.value.find(ch => ch.chapter_name === currentChapterName);
-      if (currentChapter) {
-        selectedChapter.value = currentChapter.chapter_name;
+      // Lấy thông tin chương đã lưu từ localStorage nếu có
+      const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
+      const savedChapter = savedChapters.find((ch: any) => ch.slug === slugComic);
+
+      if (savedChapter) {
+        selectedChapter.value = savedChapter.chapterName;
+        const currentChapter = listChapters.value.find(ch => ch.chapter_name === savedChapter.chapterName);
+        if (currentChapter) {
+          chapter.value = currentChapter;
+        }
       }
     }
   } catch (err) {
@@ -95,49 +113,140 @@ const fetchListChapter = async () => {
   }
 };
 
-
 const goToChapter = () => {
   const currentChapter = listChapters.value.find(ch => ch.chapter_name === selectedChapter.value);
   if (currentChapter) {
-    router.push({ name: 'comic-detail', params: { chapterApi: currentChapter.chapter_api_data, comicSlug: router.currentRoute.value.params.comicSlug, chapterName: currentChapter.chapter_name } }).then(() => {
+    const slugComic = router.currentRoute.value.params.comicSlug as string;
+
+    // Lấy các chương đã lưu từ localStorage
+    const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
+
+    // Kiểm tra nếu đã có slugComic này trong savedChapters, nếu có thì cập nhật chương, nếu không thì thêm mới
+    const existingChapterIndex = savedChapters.findIndex((ch: any) => ch.slug === slugComic);
+    if (existingChapterIndex >= 0) {
+      savedChapters[existingChapterIndex].chapterName = currentChapter.chapter_name;
+      savedChapters[existingChapterIndex].chapterApi = currentChapter.chapter_api_data; // Lưu chapter_api
+    } else {
+      savedChapters.push({
+        slug: slugComic,
+        chapterName: currentChapter.chapter_name,
+        chapterApi: currentChapter.chapter_api_data // Lưu chapter_api
+      });
+    }
+
+    // Lưu lại vào localStorage
+    localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
+
+    router.push({
+      name: 'comic-detail',
+      params: {
+        chapterApi: currentChapter.chapter_api_data,
+        comicSlug: slugComic,
+        chapterName: currentChapter.chapter_name
+      }
+    }).then(() => {
       window.location.reload();
     });
   }
 };
 
 
-
 const goToPreviousChapter = () => {
-  if (chapters.value && chapters.value.length > 0) {
-    const currentIndex = chapters.value.findIndex(ch => ch.chapter_api === chapter.value?.chapter_api);
+  if (listChapters.value && listChapters.value.length > 0) {
+    const currentIndex = listChapters.value.findIndex(ch => ch.chapter_name === chapter.value?.chapter_name);
     if (currentIndex > 0) {
-      const previousChapter = chapters.value[currentIndex - 1];
+      const previousChapter = listChapters.value[currentIndex - 1];
       selectedChapter.value = previousChapter.chapter_name;
-      router.push({ name: 'comic-detail', params: { chapterApi: previousChapter.chapter_api, comicSlug: router.currentRoute.value.params.comicSlug } });
+      const slugComic = router.currentRoute.value.params.comicSlug as string;
+
+      const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
+      const existingChapterIndex = savedChapters.findIndex((ch: any) => ch.slug === slugComic);
+      if (existingChapterIndex >= 0) {
+        savedChapters[existingChapterIndex].chapterName = previousChapter.chapter_name;
+        savedChapters[existingChapterIndex].chapterApi = previousChapter.chapter_api_data; // Lưu chapter_api
+      } else {
+        savedChapters.push({
+          slug: slugComic,
+          chapterName: previousChapter.chapter_name,
+          chapterApi: previousChapter.chapter_api_data // Lưu chapter_api
+        });
+      }
+      localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
+
+      router.push({
+        name: 'comic-detail',
+        params: {
+          chapterApi: previousChapter.chapter_api_data,
+          comicSlug: slugComic,
+          chapterName: previousChapter.chapter_name
+        }
+      }).then(() => {
+        window.location.reload(); // Tải lại trang sau khi thay đổi chương
+      });
     }
   }
 };
 
+
+// Chuyển đến chương tiếp theo
 const goToNextChapter = () => {
-  if (chapters.value && chapters.value.length > 0) {
-    const currentIndex = chapters.value.findIndex(ch => ch.chapter_api === chapter.value?.chapter_api);
-    if (currentIndex < chapters.value.length - 1) {
-      const nextChapter = chapters.value[currentIndex + 1];
+  if (listChapters.value && listChapters.value.length > 0) {
+    const currentIndex = listChapters.value.findIndex(ch => ch.chapter_name === chapter.value?.chapter_name);
+    if (currentIndex >= 0 && currentIndex < listChapters.value.length - 1) {
+      const nextChapter = listChapters.value[currentIndex + 1];
       selectedChapter.value = nextChapter.chapter_name;
-      router.push({ name: 'comic-detail', params: { chapterApi: nextChapter.chapter_api, comicSlug: router.currentRoute.value.params.comicSlug } });
+      const slugComic = router.currentRoute.value.params.comicSlug as string;
+
+      // Cập nhật chương tiếp theo vào localStorage
+      const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
+      const existingChapterIndex = savedChapters.findIndex((ch: any) => ch.slug === slugComic);
+      if (existingChapterIndex >= 0) {
+        savedChapters[existingChapterIndex].chapterName = nextChapter.chapter_name;
+        savedChapters[existingChapterIndex].chapterApi = nextChapter.chapter_api_data; // Lưu chapter_api
+      } else {
+        savedChapters.push({
+          slug: slugComic,
+          chapterName: nextChapter.chapter_name,
+          chapterApi: nextChapter.chapter_api_data // Lưu chapter_api
+        });
+      }
+      localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
+
+      // Chuyển trang
+      router.push({
+        name: 'comic-detail',
+        params: {
+          chapterApi: nextChapter.chapter_api_data,
+          comicSlug: slugComic,
+          chapterName: nextChapter.chapter_name
+        }
+      }).then(() => {
+        window.location.reload();
+      });
     }
   }
 };
 
 
-
-
+let lastScrollY = 0;
 
 onMounted(() => {
   fetchChapter();
   fetchListChapter();
+  window.addEventListener('scroll', handleScroll);
+});
+
+const handleScroll = () => {
+  showControls.value = window.scrollY < lastScrollY;
+  lastScrollY = window.scrollY;
+};
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll); // Xóa sự kiện scroll khi component bị hủy
 });
 </script>
+
+
 
 <style scoped>
 .comic-detail {
