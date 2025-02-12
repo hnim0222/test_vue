@@ -1,8 +1,15 @@
 <template>
   <div class="quote-card container">
+    <!-- Div to hold the quote -->
     <p class="quote">"{{ quote }}"</p>
     <p class="translated-quote">"{{ translatedQuote }}"</p>
     <p class="author" v-if="author">— {{ author }} —</p>
+
+    <!-- New div for image -->
+    <div v-if="quoteImage" class="quote-image">
+      <img :src="quoteImage" alt="Quote Image" />
+    </div>
+
     <button @click="fetchQuote">Trích dẫn mới</button>
   </div>
 </template>
@@ -14,6 +21,7 @@ import axios from 'axios';
 const quote = ref('');
 const author = ref('');
 const translatedQuote = ref('');
+const quoteImage = ref('');
 
 // Fetch a random quote
 const fetchQuote = async () => {
@@ -23,12 +31,26 @@ const fetchQuote = async () => {
     quote.value = data.q;
     author.value = data.a;
 
-    await translateQuote(quote.value); // Translate the quote after fetching it
+    await translateQuote(quote.value);
+    // await fetchQuoteImage(); // Fetch quote image after fetching quote
   } catch (error) {
     console.error('Error fetching quote:', error);
     quote.value = 'Không thể tải trích dẫn. Vui lòng thử lại!';
     author.value = '';
     translatedQuote.value = '';
+    quoteImage.value = '';
+  }
+};
+
+// Fetch quote image
+const fetchQuoteImage = async () => {
+  try {
+    const response = await axios.get('https://api.allorigins.win/get?url=' + encodeURIComponent('https://zenquotes.io/api/image'));
+    const data = JSON.parse(response.data.contents)[0];
+    quoteImage.value = data.imageUrl; // Assuming the response contains a field 'imageUrl'
+  } catch (error) {
+    console.error('Error fetching image:', error);
+    quoteImage.value = '';
   }
 };
 
@@ -44,7 +66,9 @@ const translateQuote = async (text: string) => {
 };
 
 // Initial quote fetch on mount
-onMounted(fetchQuote);
+onMounted(() => {
+  fetchQuote();
+});
 </script>
 
 <style scoped>
@@ -88,5 +112,18 @@ button {
 
 button:hover {
   background: #0056b3;
+}
+
+/* Style for the image container */
+.quote-image {
+  margin-top: 15px;
+}
+
+.quote-image img {
+  width: 100%;
+  max-width: 350px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 </style>

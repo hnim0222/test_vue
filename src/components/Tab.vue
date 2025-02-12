@@ -21,12 +21,10 @@
 import { ref } from 'vue';
 
 const tabs = [
-  { name: 'clock', label: 'Real Time Clock' },
+  { name: 'clock', label: 'Clock' },
   { name: 'weather', label: 'Weather' },
-  { name: 'quote', label: 'Quote' },
-  {
-    name: 'comic', label: 'Comic'
-  }
+  // { name: 'quote', label: 'Quote' },
+  { name: 'comic', label: 'Comic' }
 ];
 
 const currentTab = ref('comic');
@@ -46,7 +44,7 @@ const changeTab = (tab: string) => {
 .tabs {
   display: flex;
   justify-content: center;
-  background-color: #007bff; /* Set a background for the tabs */
+  background-color: #6794c5; /* Set a background for the tabs */
   padding: 10px;
 }
 
@@ -63,16 +61,16 @@ const changeTab = (tab: string) => {
 }
 
 .tab:hover {
-  background-color: #0056b3; /* Hover effect for the tabs */
+  background-color: #0056b3;
 }
 
 .tab.active {
-  background-color: #0056b3; /* Active tab background color */
+  background-color: #0056b3;
   color: white;
 }
 
 .tab-content {
-  padding: 20px;
+  padding-top: 20px;
   background-color: #ffffff;
 }
 </style>

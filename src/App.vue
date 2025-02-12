@@ -50,12 +50,12 @@ onUnmounted(() => {
     </Tabs>
 
     <!-- Scroll to top button, visible when scrolled down -->
-    <button
-        v-if="isVisible"
-        @click="scrollToTop"
-        class="fixed bottom-10 right-4 p-3 text-red-500 rounded-full shadow-lg hover:bg-blue-600 transition-all">
-      ↑
-    </button>
+<!--    <button-->
+<!--        v-if="isVisible"-->
+<!--        @click="scrollToTop"-->
+<!--        class="fixed bottom-10 right-4 p-3 text-red-500 rounded-full shadow-lg hover:bg-blue-600 transition-all">-->
+<!--      ↑-->
+<!--    </button>-->
   </main>
 </template>
 
