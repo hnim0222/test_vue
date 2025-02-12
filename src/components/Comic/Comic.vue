@@ -135,7 +135,7 @@ const goToChapter = () => {
     }
 
     // Lưu lại vào localStorage
-    localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
+    // localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
 
     router.push({
       name: 'comic-detail',
@@ -171,7 +171,7 @@ const goToPreviousChapter = () => {
           chapterApi: previousChapter.chapter_api_data // Lưu chapter_api
         });
       }
-      localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
+      // localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
 
       router.push({
         name: 'comic-detail',
@@ -202,17 +202,16 @@ const goToNextChapter = () => {
       const existingChapterIndex = savedChapters.findIndex((ch: any) => ch.slug === slugComic);
       if (existingChapterIndex >= 0) {
         savedChapters[existingChapterIndex].chapterName = nextChapter.chapter_name;
-        savedChapters[existingChapterIndex].chapterApi = nextChapter.chapter_api_data; // Lưu chapter_api
+        savedChapters[existingChapterIndex].chapterApi = nextChapter.chapter_api_data;
       } else {
         savedChapters.push({
           slug: slugComic,
           chapterName: nextChapter.chapter_name,
-          chapterApi: nextChapter.chapter_api_data // Lưu chapter_api
+          chapterApi: nextChapter.chapter_api_data
         });
       }
-      localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
+      // localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
 
-      // Chuyển trang
       router.push({
         name: 'comic-detail',
         params: {
