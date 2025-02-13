@@ -131,9 +131,6 @@ const goToChapter = () => {
         chapterApi: currentChapter.chapter_api_data
       });
     }
-
-    localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
-
     router.push({
       name: 'comic-detail',
       params: {
@@ -142,6 +139,7 @@ const goToChapter = () => {
         chapterName: currentChapter.chapter_name
       }
     }).then(() => {
+      localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
       window.location.reload();
     });
   }
