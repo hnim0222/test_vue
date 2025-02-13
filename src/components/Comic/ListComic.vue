@@ -106,7 +106,7 @@ const goToListChapter = (comic: any) => {
     router.push({
       name: 'comic-detail',
       params: {
-        chapterApi: savedChapter.chapterApi,
+        chapterApi: encodeURIComponent(savedChapter.chapterApi),
         comicSlug: savedChapter.slug,
         chapterName: savedChapter.chapterName
       }
