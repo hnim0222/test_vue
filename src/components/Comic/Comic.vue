@@ -8,38 +8,32 @@
         <img
             v-for="(image, index) in chapter?.chapter_image"
             :key="index"
-            :src="`${domainCDN}/${chapter?.chapter_path}/${image.image_file}`"
+            :src="`${domainCDN}/${chapter?.chapter_path}`"
             class="w-full object-cover"
             :alt="`Trang ${image.image_page}`"
         />
       </div>
 
-<!--      <div @click="showControls = true" class="fixed bottom-4 left-4 right-4">-->
-<!--        <div v-if="showControls" class="flex justify-between items-center bg-white p-1 shadow-lg">-->
-<!--          <button @click="goToPreviousChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">-->
-<!--            Previous-->
-<!--          </button>-->
+      <div @click="showControls = true" class="fixed bottom-4 left-4 right-4">
+        <div v-if="showControls" class="flex justify-between items-center bg-white p-1 shadow-lg px-5">
+          <button @click="goToPreviousChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-arrow-left"><circle cx="12" cy="12" r="10"/><path d="M16 12H8"/><path d="m12 8-4 4 4 4"/></svg>          </button>
 
-<!--          <select v-model="selectedChapter" @change="goToChapter" class="p-2 border rounded-lg text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out">-->
-<!--            <option v-for="(ch, index) in listChapters" :key="index" :value="ch.chapter_name">-->
-<!--              Chapter {{ ch.chapter_name }}-->
-<!--            </option>-->
-<!--          </select>-->
-
-<!--          <button @click="goToNextChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">-->
-<!--            Next-->
-<!--          </button>-->
-<!--        </div>-->
-<!--      </div>-->
-      <div @click="showControls = true" class="fixed bottom-4 right-4">
-        <div v-if="showControls" class="flex justify-between items-center p-1 shadow-lg">
           <button @click="goToListChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></svg>
           </button>
+
+          <select v-model="selectedChapter" @change="goToChapter" class="p-2 border rounded-lg text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out">
+            <option v-for="(ch, index) in listChapters" :key="index" :value="ch.chapter_name">
+              Chapter {{ ch.chapter_name }}
+            </option>
+          </select>
+
+          <button @click="goToNextChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-arrow-right"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="m12 16 4-4-4-4"/></svg>
+          </button>
         </div>
       </div>
-
-
     </div>
   </div>
 </template>
@@ -50,7 +44,7 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const showControls = ref(false); // Trạng thái hiển thị các phần tử
+const showControls = ref(false);
 
 interface Image {
   image_page: number;
@@ -73,50 +67,39 @@ const error = ref(false);
 const selectedChapter = ref<string>(''); // Chương đang chọn
 const listChapters = ref<any[]>([]);
 
-// Lấy thông tin chapter từ API
 const fetchChapter = async () => {
   try {
     const chapterApi = router.currentRoute.value.params.chapterApi as string;
     const response = await axios.get(chapterApi);
     chapter.value = response.data.data.item;
     domainCDN.value = response.data.data.domain_cdn;
-    chapters.value = response.data.data.item.chapters;
+    return response.data;
   } catch (err) {
     console.error("Lỗi tải dữ liệu:", err);
     error.value = true;
-  } finally {
-    loading.value = false;
   }
 };
 
-// Lấy danh sách chương từ API
 const fetchListChapter = async () => {
   try {
     const slugComic = router.currentRoute.value.params.comicSlug as string;
-
     const response = await axios.get(`https://otruyenapi.com/v1/api/truyen-tranh/${slugComic}`);
     const data = response.data;
 
     if (data.data && data.data.item?.chapters?.[0]?.server_data) {
       listChapters.value = data.data.item.chapters[0].server_data;
 
-      // Lấy thông tin chương đã lưu từ localStorage nếu có
       const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
       const savedChapter = savedChapters.find((ch: any) => ch.slug === slugComic);
 
       if (savedChapter) {
         selectedChapter.value = savedChapter.chapterName;
-        const currentChapter = listChapters.value.find(ch => ch.chapter_name === savedChapter.chapterName);
-        if (currentChapter) {
-          chapter.value = currentChapter;
-        }
       }
     }
+    return response.data;
   } catch (err) {
     console.error("Lỗi tải dữ liệu:", err);
     error.value = true;
-  } finally {
-    loading.value = false;
   }
 };
 
@@ -125,10 +108,8 @@ const goToChapter = () => {
   if (currentChapter) {
     const slugComic = router.currentRoute.value.params.comicSlug as string;
 
-    // Lấy các chương đã lưu từ localStorage
     const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
 
-    // Kiểm tra nếu đã có slugComic này trong savedChapters, nếu có thì cập nhật chương, nếu không thì thêm mới
     const existingChapterIndex = savedChapters.findIndex((ch: any) => ch.slug === slugComic);
     if (existingChapterIndex >= 0) {
       savedChapters[existingChapterIndex].chapterName = currentChapter.chapter_name;
@@ -141,7 +122,6 @@ const goToChapter = () => {
       });
     }
 
-    // Lưu lại vào localStorage
     localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
 
     router.push({
@@ -195,7 +175,6 @@ const goToPreviousChapter = () => {
 };
 
 
-// Chuyển đến chương tiếp theo
 const goToNextChapter = () => {
   if (listChapters.value && listChapters.value.length > 0) {
     const currentIndex = listChapters.value.findIndex(ch => ch.chapter_name === chapter.value?.chapter_name);
@@ -204,7 +183,6 @@ const goToNextChapter = () => {
       selectedChapter.value = nextChapter.chapter_name;
       const slugComic = router.currentRoute.value.params.comicSlug as string;
 
-      // Cập nhật chương tiếp theo vào localStorage
       const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
       const existingChapterIndex = savedChapters.findIndex((ch: any) => ch.slug === slugComic);
       if (existingChapterIndex >= 0) {
@@ -234,7 +212,6 @@ const goToNextChapter = () => {
 };
 
 const goToListChapter = () => {
-  // Ensure we are navigating to the correct route without reloading the page
   router.push({
     name: 'chapter',
     params: {
@@ -244,13 +221,24 @@ const goToListChapter = () => {
 };
 
 
-let lastScrollY = 0;
+let lastScrollY = 0
 
-onMounted(() => {
-  fetchChapter();
-  fetchListChapter();
-  window.addEventListener('scroll', handleScroll);
+onMounted(async () => {
+  try {
+    loading.value = true;
+    const [listChapterResponse, chapterResponse] = await Promise.all([
+      fetchListChapter(),
+      fetchChapter(),
+    ]);
+    window.addEventListener('scroll', handleScroll);
+  } catch (err) {
+    console.error("Lỗi tải dữ liệu:", err);
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
 });
+
 
 const handleScroll = () => {
   showControls.value = window.scrollY < lastScrollY;
@@ -258,7 +246,7 @@ const handleScroll = () => {
 };
 
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', handleScroll); // Xóa sự kiện scroll khi component bị hủy
+  window.removeEventListener('scroll', handleScroll);
 });
 </script>
 
