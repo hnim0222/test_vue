@@ -3,14 +3,14 @@
     <div v-if="loading" class="text-center text-lg font-semibold">Đang tải dữ liệu...</div>
     <div v-else-if="error" class="text-red-500 text-center text-lg">Lỗi tải dữ liệu!</div>
     <div v-else>
-      <h1 class="text-2xl font-bold m-4">{{ chapter?.comic_name }} - Chương {{ chapter?.chapter_name }}</h1>
+      <h1 class="text-2xl font-bold m-4 uppercase text-orange-500">{{ comicName }} <br> <span class="text-xl text-gray-500">Chapter {{ chapter?.chapter_name }}</span></h1>
       <div class="flex flex-col items-center mb-4">
         <img
             v-for="(image, index) in chapter?.chapter_image"
             :key="index"
             :src="`${domainCDN}/${chapter?.chapter_path}/${image.image_file}`"
             class="w-full object-cover"
-            :alt="`Trang ${image.image_page}`"
+            :alt="`Image ${image.image_page}`"
         />
       </div>
 
@@ -77,6 +77,7 @@ const listChapters = ref<any[]>([]);
 const isFirstChapter = ref(false);
 const isLastChapter = ref(false);
 const currentChapter = ref(router.currentRoute.value.params.chapterName);
+let comicName = ref('');
 
 
 const fetchChapter = async () => {
@@ -84,6 +85,7 @@ const fetchChapter = async () => {
     const chapterApi = router.currentRoute.value.params.chapterApi as string;
     const response = await axios.get(chapterApi);
     chapter.value = response.data.data.item;
+    comicName = response.data.data.item.comic_name.split('[')[0].trim();
     domainCDN.value = response.data.data.domain_cdn;
     return response.data;
   } catch (err) {
