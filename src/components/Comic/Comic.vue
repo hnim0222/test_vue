@@ -166,7 +166,7 @@ const goToChapter = () => {
     router.push({
           name: 'comic-detail',
           params: {
-            chapterApi: currentChapter.chapter_api_data,
+            chapterApi: encodeURIComponent(currentChapter.chapter_api_data),
             comicSlug: slugComic,
             chapterName: currentChapter.chapter_name
           }
@@ -205,7 +205,7 @@ const goToPreviousChapter = () => {
       router.push({
         name: 'comic-detail',
         params: {
-          chapterApi: previousChapter.chapter_api_data,
+          chapterApi: encodeURIComponent(previousChapter.chapter_api_data),
           comicSlug: slugComic,
           chapterName: previousChapter.chapter_name
         }
@@ -242,7 +242,7 @@ const goToNextChapter = () => {
       router.push({
         name: 'comic-detail',
         params: {
-          chapterApi: nextChapter.chapter_api_data,
+          chapterApi: encodeURIComponent(nextChapter.chapter_api_data),
           comicSlug: slugComic,
           chapterName: nextChapter.chapter_name
         }

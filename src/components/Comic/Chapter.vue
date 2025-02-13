@@ -123,7 +123,7 @@ const goToChapterDetail = (chapterApi: any, chapterName: string) => {
   router.push({
     name: 'comic-detail',
     params: {
-      chapterApi: chapterApi,
+      chapterApi: encodeURIComponent(chapterApi),
       comicSlug: props.comicSlug,
       chapterName: chapterName
     }
