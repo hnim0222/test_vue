@@ -142,10 +142,12 @@ const goToChapter = () => {
         comicSlug: slugComic,
         chapterName: currentChapter.chapter_name
       }
-    }).then(() => {
+    }
+    ).then(() => {
       localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
       window.location.reload();
-    });
+    }
+    );
   }
 };
 
