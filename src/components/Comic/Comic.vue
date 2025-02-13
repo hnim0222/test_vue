@@ -31,6 +31,13 @@
 <!--          </button>-->
 <!--        </div>-->
 <!--      </div>-->
+      <div @click="showControls = true" class="fixed bottom-4 right-4">
+        <div v-if="showControls" class="flex justify-between items-center p-1 shadow-lg">
+          <button @click="goToListChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></svg>
+          </button>
+        </div>
+      </div>
 
 
     </div>
@@ -224,6 +231,16 @@ const goToNextChapter = () => {
       });
     }
   }
+};
+
+const goToListChapter = () => {
+  // Ensure we are navigating to the correct route without reloading the page
+  router.push({
+    name: 'chapter',
+    params: {
+      comicSlug: router.currentRoute.value.params.comicSlug
+    }
+  });
 };
 
 
