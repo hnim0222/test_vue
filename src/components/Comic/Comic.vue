@@ -35,7 +35,7 @@
 
           <button @click="goToNextChapter" class="bg-blue-500 text-white p-2 rounded-lg transition duration-300 ease-in-out" :disabled="isLastChapter" :class="{
           'bg-blue-500 hover:bg-blue-600': !isLastChapter,
-          'bg-gray-400 cursor-not-allowed': isLastChapter
+          'bg-gray-400 cursor-not-allowed':  isLastChapter
   }">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-arrow-right"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="m12 16 4-4-4-4"/></svg>
           </button>
@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, onBeforeUnmount, computed} from 'vue';
+import {ref, onMounted, onBeforeUnmount, computed, watch} from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 
@@ -74,8 +74,10 @@ const error = ref(false);
 const selectedChapter = ref<string>('');
 const listChapters = ref<any[]>([]);
 
-const isFirstChapter = computed(() => selectedChapter.value === listChapters.value[0]?.chapter_name);
-const isLastChapter = computed(() => selectedChapter.value === listChapters.value[listChapters.value.length - 1]?.chapter_name);
+const isFirstChapter = ref(false);
+const isLastChapter = ref(false);
+const currentChapter = ref(router.currentRoute.value.params.chapterName);
+
 
 const fetchChapter = async () => {
   try {
@@ -115,6 +117,7 @@ const fetchListChapter = async () => {
 
 const goToChapter = () => {
   const currentChapter = listChapters.value.find(ch => ch.chapter_name === selectedChapter.value);
+  console.log(currentChapter)
   if (currentChapter) {
     const slugComic = router.currentRoute.value.params.comicSlug as string;
 
@@ -140,7 +143,7 @@ const goToChapter = () => {
       }
     }).then(() => {
       localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
-      window.location.reload();
+      // window.location.reload();
     });
   }
 };
@@ -247,6 +250,10 @@ onMounted(async () => {
   }
 });
 
+watch([currentChapter, listChapters], () => {
+  isFirstChapter.value = currentChapter.value === listChapters.value[0]?.chapter_name;
+  isLastChapter.value = currentChapter.value === listChapters.value[listChapters.value.length - 1]?.chapter_name;
+});
 
 const handleScroll = () => {
   showControls.value = window.scrollY < lastScrollY;
