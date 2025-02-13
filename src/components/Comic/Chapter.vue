@@ -46,7 +46,6 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-// Nhận `comicSlug` từ props
 const props = defineProps({
   comicSlug: {
     type: String,
@@ -60,7 +59,6 @@ const comicName = ref('');
 
 const selectedChapterName = ref<string>('');
 
-// Phân trang
 const currentPage = ref(1);
 const chaptersPerPage = 50;
 
