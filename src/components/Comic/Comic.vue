@@ -27,7 +27,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></svg>
           </button>
 
-          <select v-model="selectedChapter" @change="goToChapter" class="p-2 border rounded-lg text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out">
+          <select v-model="currentChapter" @change="goToChapter" class="p-2 border rounded-lg text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out">
             <option v-for="(ch, index) in listChapters" :key="index" :value="ch.chapter_name">
               Chapter {{ ch.chapter_name }}
             </option>
@@ -117,7 +117,6 @@ const fetchListChapter = async () => {
 
 const goToChapter = () => {
   const currentChapter = listChapters.value.find(ch => ch.chapter_name === selectedChapter.value);
-  console.log(currentChapter)
   if (currentChapter) {
     const slugComic = router.currentRoute.value.params.comicSlug as string;
 
@@ -143,7 +142,7 @@ const goToChapter = () => {
       }
     }).then(() => {
       localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
-      // window.location.reload();
+      window.location.reload();
     });
   }
 };
