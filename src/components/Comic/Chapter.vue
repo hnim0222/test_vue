@@ -84,7 +84,6 @@ const visiblePages = computed(() => {
   return pages;
 });
 
-// Chuyển trang
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
     currentPage.value++;
@@ -141,7 +140,7 @@ const goToChapterDetail = (chapterApi: any, chapterName: string) => {
       savedChapters.push({
         slug: props.comicSlug,
         chapterName,
-        chapterApi  // Lưu chapterApiData mới
+        chapterApi
       });
     }
     localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
