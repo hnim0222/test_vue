@@ -16,10 +16,14 @@
 
       <div @click="showControls = true" class="fixed bottom-4 left-4 right-4">
         <div v-if="showControls" class="flex justify-between items-center bg-white p-1 shadow-lg px-5">
-          <button @click="goToPreviousChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-arrow-left"><circle cx="12" cy="12" r="10"/><path d="M16 12H8"/><path d="m12 8-4 4 4 4"/></svg>          </button>
+          <button @click="goToPreviousChapter" class="bg-blue-500 text-white p-2 rounded-lg transition duration-300 ease-in-out" :disabled="isFirstChapter" :class="{
+          'bg-blue-500 hover:bg-blue-600': !isFirstChapter,
+          'bg-gray-400 cursor-not-allowed': isFirstChapter
+  }">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-arrow-left"><circle cx="12" cy="12" r="10"/><path d="M16 12H8"/><path d="m12 8-4 4 4 4"/></svg>
+          </button>
 
-          <button @click="goToListChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">
+          <button @click="goToListChapter" class="bg-blue-500 text-white p-2 rounded-lg transition duration-300 ease-in-out">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></svg>
           </button>
 
@@ -29,7 +33,10 @@
             </option>
           </select>
 
-          <button @click="goToNextChapter" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300 ease-in-out">
+          <button @click="goToNextChapter" class="bg-blue-500 text-white p-2 rounded-lg transition duration-300 ease-in-out" :disabled="isLastChapter" :class="{
+          'bg-blue-500 hover:bg-blue-600': !isLastChapter,
+          'bg-gray-400 cursor-not-allowed': isLastChapter
+  }">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-arrow-right"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="m12 16 4-4-4-4"/></svg>
           </button>
         </div>
@@ -39,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import {ref, onMounted, onBeforeUnmount, computed} from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 
@@ -60,12 +67,15 @@ interface Chapter {
 }
 
 const chapter = ref<Chapter | null>(null);
-const chapters = ref<Chapter[]>([]);  // List of chapters
+const chapters = ref<Chapter[]>([]);
 const domainCDN = ref('');
 const loading = ref(true);
 const error = ref(false);
-const selectedChapter = ref<string>(''); // Chương đang chọn
+const selectedChapter = ref<string>('');
 const listChapters = ref<any[]>([]);
+
+const isFirstChapter = computed(() => selectedChapter.value === listChapters.value[0]?.chapter_name);
+const isLastChapter = computed(() => selectedChapter.value === listChapters.value[listChapters.value.length - 1]?.chapter_name);
 
 const fetchChapter = async () => {
   try {
@@ -113,12 +123,12 @@ const goToChapter = () => {
     const existingChapterIndex = savedChapters.findIndex((ch: any) => ch.slug === slugComic);
     if (existingChapterIndex >= 0) {
       savedChapters[existingChapterIndex].chapterName = currentChapter.chapter_name;
-      savedChapters[existingChapterIndex].chapterApi = currentChapter.chapter_api_data; // Lưu chapter_api
+      savedChapters[existingChapterIndex].chapterApi = currentChapter.chapter_api_data;
     } else {
       savedChapters.push({
         slug: slugComic,
         chapterName: currentChapter.chapter_name,
-        chapterApi: currentChapter.chapter_api_data // Lưu chapter_api
+        chapterApi: currentChapter.chapter_api_data
       });
     }
 
