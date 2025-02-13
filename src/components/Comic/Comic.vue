@@ -8,7 +8,7 @@
         <img
             v-for="(image, index) in chapter?.chapter_image"
             :key="index"
-            :src="`${domainCDN}/${chapter?.chapter_path}`"
+            :src="`${domainCDN}/${chapter?.chapter_path}/${image.image_file}`"
             class="w-full object-cover"
             :alt="`Trang ${image.image_page}`"
         />
@@ -44,7 +44,7 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const showControls = ref(false);
+const showControls = ref(true);
 
 interface Image {
   image_page: number;
