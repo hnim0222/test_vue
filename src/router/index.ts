@@ -16,7 +16,7 @@ const routes = [
         props: true
     },
     {
-        path: '/chapter/:chapterApi/:comicSlug/:chapterName',
+        path: '/chapter/:comicSlug/:chapterName',
         name: 'comic-detail',
         component: ComicDetail,
         props: true
