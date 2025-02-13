@@ -16,29 +16,29 @@
 
       <div @click="showControls = true" class="fixed bottom-4 left-4 right-4">
         <div v-if="showControls" class="flex justify-between items-center bg-white p-1 shadow-lg px-5">
-          <button @click="goToPreviousChapter" class="bg-blue-500 text-white p-2 rounded-lg transition duration-300 ease-in-out" :disabled="isFirstChapter" :class="{
-          'bg-blue-500 hover:bg-blue-600': !isFirstChapter,
-          'bg-gray-400 cursor-not-allowed': isFirstChapter
-  }">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-arrow-left"><circle cx="12" cy="12" r="10"/><path d="M16 12H8"/><path d="m12 8-4 4 4 4"/></svg>
-          </button>
+<!--          <button @click="goToPreviousChapter" class="bg-blue-500 text-white p-2 rounded-lg transition duration-300 ease-in-out" :disabled="isFirstChapter" :class="{-->
+<!--          'bg-blue-500 hover:bg-blue-600': !isFirstChapter,-->
+<!--          'bg-gray-400 cursor-not-allowed': isFirstChapter-->
+<!--  }">-->
+<!--            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-arrow-left"><circle cx="12" cy="12" r="10"/><path d="M16 12H8"/><path d="m12 8-4 4 4 4"/></svg>-->
+<!--          </button>-->
 
           <button @click="goToListChapter" class="bg-blue-500 text-white p-2 rounded-lg transition duration-300 ease-in-out">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></svg>
           </button>
 
-          <select v-model="selectedChapter" @change="goToChapter" class="p-2 border rounded-lg text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out">
-            <option v-for="(ch, index) in listChapters" :key="index" :value="ch.chapter_name">
-              Chapter {{ ch.chapter_name }}
-            </option>
-          </select>
+<!--          <select v-model="selectedChapter" @change="goToChapter" class="p-2 border rounded-lg text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out">-->
+<!--            <option v-for="(ch, index) in listChapters" :key="index" :value="ch.chapter_name">-->
+<!--              Chapter {{ ch.chapter_name }}-->
+<!--            </option>-->
+<!--          </select>-->
 
-          <button @click="goToNextChapter" class="bg-blue-500 text-white p-2 rounded-lg transition duration-300 ease-in-out" :disabled="isLastChapter" :class="{
-          'bg-blue-500 hover:bg-blue-600': !isLastChapter,
-          'bg-gray-400 cursor-not-allowed':  isLastChapter
-  }">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-arrow-right"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="m12 16 4-4-4-4"/></svg>
-          </button>
+<!--          <button @click="goToNextChapter" class="bg-blue-500 text-white p-2 rounded-lg transition duration-300 ease-in-out" :disabled="isLastChapter" :class="{-->
+<!--          'bg-blue-500 hover:bg-blue-600': !isLastChapter,-->
+<!--          'bg-gray-400 cursor-not-allowed':  isLastChapter-->
+<!--  }">-->
+<!--            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-arrow-right"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="m12 16 4-4-4-4"/></svg>-->
+<!--          </button>-->
         </div>
       </div>
     </div>
@@ -116,37 +116,37 @@ const fetchListChapter = async () => {
 };
 
 const goToChapter = () => {
-  // const currentChapter = listChapters.value.find(ch => ch.chapter_name === selectedChapter.value);
-  // if (currentChapter) {
-  //   const slugComic = router.currentRoute.value.params.comicSlug as string;
-  //
-  //   const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
-  //
-  //   const existingChapterIndex = savedChapters.findIndex((ch: any) => ch.slug === slugComic);
-  //   if (existingChapterIndex >= 0) {
-  //     savedChapters[existingChapterIndex].chapterName = currentChapter.chapter_name;
-  //     savedChapters[existingChapterIndex].chapterApi = currentChapter.chapter_api_data;
-  //   } else {
-  //     savedChapters.push({
-  //       slug: slugComic,
-  //       chapterName: currentChapter.chapter_name,
-  //       chapterApi: currentChapter.chapter_api_data
-  //     });
-  //   }
+  const currentChapter = listChapters.value.find(ch => ch.chapter_name === selectedChapter.value);
+  if (currentChapter) {
+    const slugComic = router.currentRoute.value.params.comicSlug as string;
+
+    const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
+
+    const existingChapterIndex = savedChapters.findIndex((ch: any) => ch.slug === slugComic);
+    if (existingChapterIndex >= 0) {
+      savedChapters[existingChapterIndex].chapterName = currentChapter.chapter_name;
+      savedChapters[existingChapterIndex].chapterApi = currentChapter.chapter_api_data;
+    } else {
+      savedChapters.push({
+        slug: slugComic,
+        chapterName: currentChapter.chapter_name,
+        chapterApi: currentChapter.chapter_api_data
+      });
+    }
     router.push({
       name: 'comic-detail',
       params: {
-        chapterApi: 'https://sv1.otruyencdn.com/v1/api/chapter/65924396e120ddf21993043c',
-        comicSlug: 'van-co-toi-cuong-tong',
-        chapterName: '94'
+        chapterApi: currentChapter.chapter_api_data,
+        comicSlug: slugComic,
+        chapterName: currentChapter.chapter_name
       }
     }
     ).then(() => {
-      // localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
+      localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
       window.location.reload();
     }
     );
-  // }
+  }
 };
 
 
