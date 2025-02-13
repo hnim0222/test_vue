@@ -106,16 +106,17 @@ const goToListChapter = (comic: any) => {
     router.push({
       name: 'comic-detail',
       params: {
-        chapterApi: encodeURIComponent(savedChapter.chapterApi),
         comicSlug: savedChapter.slug,
         chapterName: savedChapter.chapterName
+      },
+      query: {
+        chapterApi: savedChapter.chapterApi
       }
     });
   } else {
     router.push({ path: `/comic/${comic.slug}` });
   }
 };
-
 
 const nextPage = () => {
   page.value++;

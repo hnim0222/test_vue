@@ -123,9 +123,11 @@ const goToChapterDetail = (chapterApi: any, chapterName: string) => {
   router.push({
     name: 'comic-detail',
     params: {
-      chapterApi: encodeURIComponent(chapterApi),
       comicSlug: props.comicSlug,
       chapterName: chapterName
+    },
+    query: {
+      chapterApi: encodeURIComponent(chapterApi)
     }
   }).then(() => {
     const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
@@ -146,6 +148,7 @@ const goToChapterDetail = (chapterApi: any, chapterName: string) => {
     localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
   });
 };
+
 
 </script>
 
