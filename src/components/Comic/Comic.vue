@@ -116,23 +116,23 @@ const fetchListChapter = async () => {
 };
 
 const goToChapter = () => {
-  const currentChapter = listChapters.value.find(ch => ch.chapter_name === selectedChapter.value);
-  if (currentChapter) {
-    // const slugComic = router.currentRoute.value.params.comicSlug as string;
-    //
-    // const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
-    //
-    // const existingChapterIndex = savedChapters.findIndex((ch: any) => ch.slug === slugComic);
-    // if (existingChapterIndex >= 0) {
-    //   savedChapters[existingChapterIndex].chapterName = currentChapter.chapter_name;
-    //   savedChapters[existingChapterIndex].chapterApi = currentChapter.chapter_api_data;
-    // } else {
-    //   savedChapters.push({
-    //     slug: slugComic,
-    //     chapterName: currentChapter.chapter_name,
-    //     chapterApi: currentChapter.chapter_api_data
-    //   });
-    // }
+  // const currentChapter = listChapters.value.find(ch => ch.chapter_name === selectedChapter.value);
+  // if (currentChapter) {
+  //   const slugComic = router.currentRoute.value.params.comicSlug as string;
+  //
+  //   const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
+  //
+  //   const existingChapterIndex = savedChapters.findIndex((ch: any) => ch.slug === slugComic);
+  //   if (existingChapterIndex >= 0) {
+  //     savedChapters[existingChapterIndex].chapterName = currentChapter.chapter_name;
+  //     savedChapters[existingChapterIndex].chapterApi = currentChapter.chapter_api_data;
+  //   } else {
+  //     savedChapters.push({
+  //       slug: slugComic,
+  //       chapterName: currentChapter.chapter_name,
+  //       chapterApi: currentChapter.chapter_api_data
+  //     });
+  //   }
     router.push({
       name: 'comic-detail',
       params: {
@@ -146,7 +146,7 @@ const goToChapter = () => {
       window.location.reload();
     }
     );
-  }
+  // }
 };
 
 
