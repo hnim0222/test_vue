@@ -7,10 +7,8 @@ import Weather from "./components/Weather.vue"
 import Tabs from "./components/Tab.vue"
 import ListComic from "@/components/Comic/ListComic.vue"; // Adjusted component import for comic list
 
-// Define visibility state for scroll to top button
 const isVisible = ref(false);
 
-// Function to scroll back to the top of the page
 const scrollToTop = () => {
   window.scrollTo({
     top: 0,
