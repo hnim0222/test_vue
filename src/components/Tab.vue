@@ -37,14 +37,13 @@ const changeTab = (tab: string) => {
 <style scoped>
 .tabs-header {
   width: 100%;
-  background-color: #f7f7f7; /* Background color for the header */
-
+  background-color: #ffffff; /* Background color for the header */
 }
 
 .tabs {
-  display: flex;
+  display: none;
   justify-content: center;
-  background-color: #6794c5; /* Set a background for the tabs */
+  background-color: #ffffff; /* Set a background for the tabs */
   padding: 10px;
 }
 
