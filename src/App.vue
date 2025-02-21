@@ -5,6 +5,7 @@ import RealTimeClock from './components/RealTimeClock.vue'
 import Quote from "./components/Quote.vue"
 import Weather from "./components/Weather.vue"
 import Tabs from "./components/Tab.vue"
+import ListFilm from "@/components/Film/ListFilm.vue";
 import ListComic from "@/components/Comic/ListComic.vue"; // Adjusted component import for comic list
 
 const isVisible = ref(false);
@@ -44,6 +45,9 @@ onUnmounted(() => {
       </template>
       <template #comic>
          <router-view />
+      </template>
+      <template #film>
+        <ListFilm />
       </template>
     </Tabs>
 

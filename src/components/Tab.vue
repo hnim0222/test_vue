@@ -24,7 +24,9 @@ const tabs = [
   { name: 'clock', label: 'Clock' },
   { name: 'weather', label: 'Weather' },
   // { name: 'quote', label: 'Quote' },
-  { name: 'comic', label: 'Comic' }
+  { name: 'comic', label: 'Comic' },
+  { name: 'film', label: 'Film' }
+
 ];
 
 const currentTab = ref('comic');
@@ -37,13 +39,13 @@ const changeTab = (tab: string) => {
 <style scoped>
 .tabs-header {
   width: 100%;
-  background-color: #ffffff; /* Background color for the header */
+  background-color: #9c7676; /* Background color for the header */
 }
 
 .tabs {
-  display: none;
+  display: flex;
   justify-content: center;
-  background-color: #ffffff; /* Set a background for the tabs */
+  background-color: #c59f9f; /* Set a background for the tabs */
   padding: 10px;
 }
 
@@ -53,14 +55,14 @@ const changeTab = (tab: string) => {
   background-color: transparent;
   border: none;
   margin-right: 10px;
-  color: white;
+  color: #c53838;
   font-weight: bold;
   border-radius: 4px;
   transition: background-color 0.3s;
 }
 
 .tab:hover {
-  background-color: #0056b3;
+  background-color: #3c6fa6;
 }
 
 .tab.active {
