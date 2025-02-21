@@ -246,7 +246,7 @@ const goToListChapter = () => {
 
 const goToHome = () => {
   router.push({
-    name: 'home',
+    name: 'list-comic',
   });
 };
 
