@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import epub from "epubjs";
 import { ref } from "vue";
 
