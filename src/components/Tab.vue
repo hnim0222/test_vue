@@ -12,67 +12,79 @@
     </div>
 
     <div class="tab-content">
-      <slot :name="currentTab"></slot>
+      <router-view />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import {computed, onMounted} from "vue";
+import { useRoute, useRouter } from "vue-router";
+
+const router = useRouter();
+const route = useRoute();
 
 const tabs = [
-  // { name: 'clock', label: 'Clock' },
-  // { name: 'weather', label: 'Weather' },
-  // { name: 'quote', label: 'Quote' },
-  { name: 'comic', label: 'Comic' },
-  { name: 'film', label: 'Film' },
-  {name: 'ebook', label: 'Ebook'}
-
+  { name: "clock", label: "Clock", path: "/" },
+  { name: "comic", label: "Comic", path: "/comic" },
+  { name: "film", label: "Film", path: "/film" },
+  { name: "ebook", label: "Ebook", path: "/ebook" }
 ];
 
-const currentTab = ref('ebook');
+const currentTab = computed(() => route.name);
 
 const changeTab = (tab: string) => {
-  currentTab.value = tab;
+  const selectedTab = tabs.find(t => t.name === tab);
+  if (selectedTab) {
+    router.push(selectedTab.path);
+  }
 };
+
+onMounted(() => {
+  if (route.path === "/") {
+    router.push("/film");
+  }
+});
 </script>
 
 <style scoped>
 .tabs-header {
   width: 100%;
-  background-color: #9c7676; /* Background color for the header */
+  background: linear-gradient(90deg, #2c3e50, #34495e);
+  padding: 10px 0;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .tabs {
   display: flex;
   justify-content: center;
-  background-color: #c59f9f; /* Set a background for the tabs */
-  padding: 10px;
+  gap: 15px;
 }
 
 .tab {
-  padding: 12px 20px;
-  cursor: pointer;
+  padding: 12px 18px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ecf0f1;
   background-color: transparent;
   border: none;
-  margin-right: 10px;
-  color: #c53838;
-  font-weight: bold;
-  border-radius: 4px;
-  transition: background-color 0.3s;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
 }
 
 .tab:hover {
-  background-color: #3c6fa6;
+  color: #1abc9c;
 }
 
 .tab.active {
-  background-color: #0056b3;
-  color: white;
+  color: #1abc9c;
+  border-bottom: 3px solid #1abc9c;
 }
 
 .tab-content {
-  padding-top: 20px;
+  padding: 20px;
   background-color: #ffffff;
+  display: none;
 }
 </style>
