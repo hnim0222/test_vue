@@ -14,7 +14,6 @@ const upload = async (e: Event) => {
   try {
     const arrayBuffer = await file.arrayBuffer();
     book = epub(arrayBuffer);
-    console.log("Book loaded:", book);
 
     rendition = book.renderTo("root", {
       width: "100%",
@@ -32,14 +31,14 @@ const upload = async (e: Event) => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center space-y-4 p-4">
+  <div class="flex flex-col items-center space-y-4">
     <label
         for="fileUpload"
         class="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all"
     >
       📥 Chọn file EPUB
     </label>
-    <input id="fileUpload" type="file" accept=".epub" class="hidden" @change="upload" />
+    <input id="fileUpload" type="file" class="hidden" @change="upload" />
 
     <div id="root" class="w-full max-w-3xl"></div>
   </div>
