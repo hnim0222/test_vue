@@ -6,6 +6,7 @@ import Quote from "./components/Quote.vue"
 import Weather from "./components/Weather.vue"
 import Tabs from "./components/Tab.vue"
 import ListFilm from "@/components/Film/ListFilm.vue";
+import Ebook from "@/components/Ebook/Ebook.vue";
 import ListComic from "@/components/Comic/ListComic.vue"; // Adjusted component import for comic list
 
 const isVisible = ref(false);
@@ -48,6 +49,9 @@ onUnmounted(() => {
       </template>
       <template #film>
         <ListFilm />
+      </template>
+      <template #ebook>
+        <Ebook />
       </template>
     </Tabs>
 

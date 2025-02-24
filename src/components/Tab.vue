@@ -21,15 +21,16 @@
 import { ref } from 'vue';
 
 const tabs = [
-  { name: 'clock', label: 'Clock' },
-  { name: 'weather', label: 'Weather' },
+  // { name: 'clock', label: 'Clock' },
+  // { name: 'weather', label: 'Weather' },
   // { name: 'quote', label: 'Quote' },
   { name: 'comic', label: 'Comic' },
-  { name: 'film', label: 'Film' }
+  { name: 'film', label: 'Film' },
+  {name: 'ebook', label: 'Ebook'}
 
 ];
 
-const currentTab = ref('comic');
+const currentTab = ref('ebook');
 
 const changeTab = (tab: string) => {
   currentTab.value = tab;
