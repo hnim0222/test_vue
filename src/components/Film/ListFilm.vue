@@ -2,150 +2,129 @@
   <div>
     <div v-if="loading">Loading...</div>
     <div v-else>
-      <!-- Loop through the list of movies -->
-      <div v-for="(movieData, index) in movies" :key="index" class="movie-details">
-        <div class="movie-content">
-          <!-- Left Side: Poster -->
-          <div class="movie-poster">
-            <img :src="movieData.movie.poster_url" alt="Movie Poster" />
-          </div>
-
-          <!-- Right Side: Movie Information -->
-          <div class="movie-info">
-            <h2>{{ movieData.movie.name }}</h2>
-            <p><strong>Year:</strong> {{ movieData.movie.year }}</p>
-            <p><strong>Categories:</strong>
-              <span v-for="(category, index) in movieData.movie.category" :key="category.id">
-                {{ category.name }}<span v-if="index !== movieData.movie.category.length - 1">, </span>
-              </span>
-            </p>
-            <p><strong>Country:</strong> {{ movieData.movie.country[0].name }}</p>
-
-            <!-- Render description and toggle it -->
-            <p v-html="movieData.showFullDescription ? movieData.movie.content : truncatedDescription(movieData.movie.content)"></p>
-
-            <!-- Show/Hide text link -->
-            <span v-if="movieData.movie.content.length > 200" @click="toggleDescription(movieData)">
-              {{ movieData.showFullDescription ? 'Show Less' : 'Read More' }}
-            </span>
-
-            <!-- Link to episode -->
-            <a :href="movieData.episode.link_embed" target="_blank">Watch Now</a>
-          </div>
+      <div class="movie-list">
+        <div v-for="(movie, index) in movies" :key="index" class="movie-card" @click="goToDetail(movie.slug)">
+          <img :src="movie.poster_url" :alt="movie.name" class="movie-poster" />
+          <h3 class="movie-title">{{ movie.name }}</h3>
         </div>
+      </div>
+
+      <!-- Pagination Buttons -->
+      <div class="pagination">
+        <button @click="prevPage" :disabled="page <= 1">Previous</button>
+        <span>Page {{ page }}</span>
+        <button @click="nextPage">Next</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
 
-const movieUrls = [
-  "http://ophim1.com/phim/lupin-de-tam-tham-tu-conan",
-  "https://ophim1.com/phim/tham-tu-lung-danh-conan-con-ac-mong-den-toi",
-  "http://ophim1.com/phim/dich-nhan-kiet-thong-thien-huyen-an",
-  "http://ophim1.com/phim/sieu-nhen-tai-xuat-2-nguoi-nhen-sieu-dang-2-su-troi-day-cua-nguoi-dien",
-  "https://ophim1.com/phim/dai-uy-marvel",
-  "https://ophim1.com/phim/lat-mat-6-tam-ve-dinh-menh"
-];
-
+const router = useRouter();
 const movies = ref<any[]>([]);
 const loading = ref(true);
+const page = ref(1);
 
-// Function to fetch movie data from each URL
 const fetchMoviesData = async () => {
-  const movieDataPromises = movieUrls.map(async (url) => {
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (data.status) {
-        return {
-          movie: data.movie,
-          episode: data.episodes[0].server_data[0], // Get the first episode's data
-          showFullDescription: false, // Initially, description is truncated
-        };
-      }
-    } catch (error) {
-      console.error("Error fetching data for", url, error);
+  loading.value = true;
+  try {
+    const response = await fetch(`https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=${page.value}`);
+    const data = await response.json();
+    if (data.status && data.items) {
+      movies.value = data.items.map((movie: any) => ({
+        name: movie.name,
+        slug: movie.slug,
+        poster_url: 'https://img.ophim.live/uploads/movies/' + movie.poster_url,
+      }));
     }
+  } catch (error) {
+    console.error("Lỗi khi lấy dữ liệu phim:", error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const goToDetail = (slug: string) => {
+  router.push({
+    name: 'film-detail',
+    params: { filmSlug: slug }
   });
-
-  const result = await Promise.all(movieDataPromises);
-  movies.value = result.filter((data) => data !== undefined); // Filter out failed requests
-  loading.value = false;
 };
 
-// Fetch movie data when the component is mounted
-onMounted(() => {
-  fetchMoviesData();
-});
-
-// Truncate text if it exceeds a certain length
-const truncatedDescription = (text: string) => {
-  return text.length > 200 ? text.substring(0, 200) + "..." : text;
+// Pagination Functions
+const nextPage = () => {
+  page.value++;
+};
+const prevPage = () => {
+  if (page.value > 1) page.value--;
 };
 
-// Toggle the description visibility
-const toggleDescription = (movieData: any) => {
-  movieData.showFullDescription = !movieData.showFullDescription;
-};
+// Watch page changes to fetch new data
+watch(page, fetchMoviesData);
+
+// Fetch data when the component mounts
+onMounted(fetchMoviesData);
 </script>
 
 <style scoped>
-.movie-details {
-  display: flex;
-  justify-content: space-between;
-  margin: 20px;
-}
-
-.movie-content {
-  display: flex;
+.movie-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
+  padding: 20px;
 }
 
-.movie-poster img {
-  width: 300px; /* Adjust width for the poster */
+.movie-card {
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.movie-card:hover {
+  transform: scale(1.05);
+}
+
+.movie-poster {
+  width: 100%;
   height: auto;
   border-radius: 8px;
 }
 
-.movie-info {
-  flex: 1;
-}
-
-.movie-info h2 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-.movie-info p {
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-.movie-info a {
-  display: inline-block;
+.movie-title {
+  font-size: 18px;
   margin-top: 10px;
+  font-weight: bold;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  gap: 10px;
+}
+
+.pagination button {
   padding: 10px 15px;
-  background-color: #007BFF;
+  font-size: 16px;
+  background-color: #007bff;
   color: white;
-  text-decoration: none;
-  border-radius: 5px;
-}
-
-.movie-info a:hover {
-  background-color: #0056b3;
-}
-
-span {
-  color: #007BFF;
+  border: none;
   cursor: pointer;
-  text-decoration: underline;
+  border-radius: 5px;
+  transition: background 0.3s;
 }
 
-span:hover {
-  color: #0056b3;
+.pagination button:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #0056b3;
 }
 </style>

@@ -7,7 +7,8 @@ import Weather from "./components/Weather.vue"
 import Tabs from "./components/Tab.vue"
 import ListFilm from "@/components/Film/ListFilm.vue";
 import Ebook from "@/components/Ebook/Ebook.vue";
-import ListComic from "@/components/Comic/ListComic.vue"; // Adjusted component import for comic list
+import ListComic from "@/components/Comic/ListComic.vue";
+import FilmDetail from "@/components/Film/FilmDetail.vue"; // Adjusted component import for comic list
 
 const isVisible = ref(false);
 
@@ -45,7 +46,7 @@ onUnmounted(() => {
         <Quote />
       </template>
       <template #comic>
-         <router-view />
+        <ListComic />
       </template>
       <template #film>
         <ListFilm />
@@ -55,15 +56,14 @@ onUnmounted(() => {
       </template>
     </Tabs>
 
-    <!-- Scroll to top button, visible when scrolled down -->
-<!--    <button-->
-<!--        v-if="isVisible"-->
-<!--        @click="scrollToTop"-->
-<!--        class="fixed bottom-10 right-4 p-3 text-red-500 rounded-full shadow-lg hover:bg-blue-600 transition-all">-->
-<!--      ↑-->
-<!--    </button>-->
+    <router-view v-slot="{ Component }">
+      <keep-alive name="fade" mode="out-in">
+        <component :is="Component" />
+      </keep-alive>
+    </router-view>
   </main>
 </template>
+
 
 <style scoped>
 button {
