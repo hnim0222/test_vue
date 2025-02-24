@@ -41,12 +41,12 @@ const upload = async (e: Event) => {
     </label>
     <input id="fileUpload" type="file" accept=".epub" class="hidden" @change="upload" />
 
-    <div id="root" class="w-full max-w-3xl h-[500px] border border-gray-300 shadow-md"></div>
+    <div id="root" class="w-full max-w-3xl"></div>
   </div>
 </template>
 
 <style scoped>
 #root {
-  height: 500px;
+  height: 100vh;
 }
 </style>
