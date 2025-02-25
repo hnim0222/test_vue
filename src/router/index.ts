@@ -6,6 +6,7 @@ import ListFilm from "@/components/Film/ListFilm.vue";
 import FilmDetail from "@/components/Film/FilmDetail.vue";
 import Clock from "@/components/RealTimeClock.vue";
 import Ebook from '@/components/Ebook/Ebook.vue';
+import Espisode from "@/components/Film/Espisode.vue";
 
 const routes = [
     {
@@ -40,6 +41,12 @@ const routes = [
         path: '/film/:filmSlug',
         name: 'film-detail',
         component: FilmDetail,
+        props: true
+    },
+    {
+        path: '/film/espisode/:espisodeSlug',
+        name: 'espisode',
+        component: Espisode,
         props: true
     },
     {
