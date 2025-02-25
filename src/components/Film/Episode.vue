@@ -33,7 +33,6 @@ const fetchEpisode = async () => {
     const response = await axios.get(`https://ophim1.com/phim/${slug}`);
     film.value = response.data.episodes[0]?.server_data ?? [];
 
-    // Lấy tập đã lưu trong localStorage
     const savedEpisode = localStorage.getItem(`lastWatched_${slug}`);
     const lastEpisode = savedEpisode || film.value[0]?.link_m3u8;
 

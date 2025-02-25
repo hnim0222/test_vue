@@ -65,6 +65,7 @@ onMounted(async () => {
   >
     Watch now
   </div>
+  <div style="height: 20px;"></div>
 </template>
 
 <style scoped>
