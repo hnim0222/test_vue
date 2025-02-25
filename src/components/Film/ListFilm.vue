@@ -57,7 +57,6 @@ const loadWatchLaterList = () => {
   watchLaterList.value = JSON.parse(localStorage.getItem("watchLater") || "[]");
 };
 
-// Tải danh sách phim từ API
 const fetchMoviesData = async () => {
   loading.value = true;
   try {
@@ -80,38 +79,30 @@ const fetchMoviesData = async () => {
   }
 };
 
-// Đồng bộ danh sách phim "Xem Sau" với API
 const syncWatchLaterMovies = () => {
   watchLaterMovies.value = movies.value.filter((movie) =>
       watchLaterList.value.includes(movie.slug)
   );
 };
 
-// Kiểm tra phim đã được lưu vào "Xem Sau" chưa
 const isWatchLater = (slug: string) => {
   return watchLaterList.value.includes(slug);
 };
 
-// Thêm phim vào danh sách "Xem Sau"
 const addToWatchLater = (movie: any) => {
   if (!watchLaterList.value.includes(movie.slug)) {
     watchLaterList.value.push(movie.slug);
     localStorage.setItem("watchLater", JSON.stringify(watchLaterList.value));
     syncWatchLaterMovies();
-    alert(`📌 Đã thêm "${movie.name}" vào danh sách Xem Sau!`);
-  } else {
-    alert(`✅ "${movie.name}" đã có trong danh sách Xem Sau.`);
   }
 };
 
-// Xóa phim khỏi danh sách "Xem Sau"
 const removeFromWatchLater = (slug: string) => {
   watchLaterList.value = watchLaterList.value.filter((s) => s !== slug);
   localStorage.setItem("watchLater", JSON.stringify(watchLaterList.value));
   syncWatchLaterMovies();
 };
 
-// Chuyển đến trang chi tiết phim
 const goToDetail = (slug: string) => {
   router.push({
     name: "film-detail",
@@ -119,7 +110,6 @@ const goToDetail = (slug: string) => {
   });
 };
 
-// Phân trang
 const nextPage = () => {
   page.value++;
 };
@@ -127,7 +117,6 @@ const prevPage = () => {
   if (page.value > 1) page.value--;
 };
 
-// Khi trang thay đổi, tải lại danh sách phim
 watch(page, fetchMoviesData);
 
 onMounted(() => {
@@ -135,6 +124,7 @@ onMounted(() => {
   fetchMoviesData();
 });
 </script>
+
 
 <style scoped>
 /* Danh sách Xem Sau */
