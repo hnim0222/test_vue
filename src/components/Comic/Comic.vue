@@ -8,7 +8,7 @@
         <img
             v-for="(image, index) in chapter?.chapter_image"
             :key="index"
-            :src="`${domainCDN}/${chapter?.chapter_path}/${image.image_file1}`"
+            :src="`${domainCDN}/${chapter?.chapter_path}/${image.image_file}`"
             class="w-full object-cover"
             :alt="`Image ${image.image_page}`"
         />
