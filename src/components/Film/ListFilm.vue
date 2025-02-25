@@ -37,7 +37,7 @@ const fetchMoviesData = async () => {
       movies.value = data.items.map((movie: any) => ({
         name: movie.name,
         slug: movie.slug,
-        poster_url: 'https://img.ophim.live/uploads/movies/' + movie.poster_url,
+        poster_url: 'https://img.ophim.live/uploads/movie/' + movie.poster_url,
       }));
     }
   } catch (error) {
@@ -54,7 +54,6 @@ const goToDetail = (slug: string) => {
   });
 };
 
-// Pagination Functions
 const nextPage = () => {
   page.value++;
 };
@@ -62,10 +61,8 @@ const prevPage = () => {
   if (page.value > 1) page.value--;
 };
 
-// Watch page changes to fetch new data
 watch(page, fetchMoviesData);
 
-// Fetch data when the component mounts
 onMounted(fetchMoviesData);
 </script>
 
