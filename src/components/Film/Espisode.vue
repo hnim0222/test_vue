@@ -20,7 +20,7 @@ import 'video.js/dist/video-js.css';
 const router = useRouter();
 const film = ref<any[]>([]);
 const videoPlayer = ref<HTMLVideoElement | null>(null);
-let player: videojs.Player | null = null;
+let player: any = null;
 
 const fetchEpisode = async () => {
   try {
