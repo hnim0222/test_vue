@@ -134,8 +134,22 @@ const upload = async (e: Event) => {
   await saveToIndexedDB(file);
 };
 
+const showBackButton = ref(false);
+
+const handleScroll = () => {
+  const container = document.getElementById("root");
+  if (container) {
+    showBackButton.value = container.scrollTop > 50;
+  }
+};
+
 onMounted(async () => {
   await loadBooksList();
+
+  const rootElement = document.getElementById("root");
+  if (rootElement) {
+    rootElement.addEventListener("scroll", handleScroll);
+  }
 });
 
 </script>
@@ -143,6 +157,7 @@ onMounted(async () => {
 <template>
   <div class="app-container">
     <div id="root" class="reader">
+      <button class="back-btn" @click="closeBook"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
     </div>
     <div class="list-container" v-if="!isReaderOpen">
       <div class="books-list">
@@ -315,5 +330,21 @@ onMounted(async () => {
 .delete-btn:hover {
   background-color: #dc2626;
 }
+
+.back-btn {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 1000;
+  transition: background-color 0.2s ease;
+}
+
+.back-btn:hover {
+  background-color: #2563eb;
+}
+
 
 </style>
