@@ -94,7 +94,6 @@ const loadBooksList = async () => {
     const db = await getDB();
     const allKeys = await db.getAllKeys(STORE_NAME);
 
-    // Dùng Promise.all để lấy dữ liệu song song
     booksList.value = await Promise.all(
         allKeys.map(async (key) => {
           const arrayBuffer = await db.get(STORE_NAME, key);
@@ -112,6 +111,17 @@ const loadBooksList = async () => {
     console.log('Loaded books:', booksList.value.length);
   } catch (error) {
     console.error('Error loading books list:', error);
+  }
+};
+
+const deleteBook = async (bookKey: string) => {
+  try {
+    const db = await getDB();
+    await db.delete(STORE_NAME, bookKey);
+    booksList.value = booksList.value.filter((book) => book.key !== bookKey);
+    console.log(`Deleted book: ${bookKey}`);
+  } catch (error) {
+    console.error('Error deleting book:', error);
   }
 };
 
@@ -140,17 +150,15 @@ onMounted(async () => {
             v-for="item in booksList"
             :key="item.key"
             class="book-item"
-            @click="loadBook(item.key)"
         >
-          <img
-              v-if="item.cover"
-              :src="item.cover"
-              alt="Book cover"
-              class="book-cover"
-          >
-          <div v-else class="no-cover">No Cover</div>
-          <span class="book-title">{{ item.name }}</span>
+          <div @click="loadBook(item.key)" class="book-info">
+            <img v-if="item.cover" :src="item.cover" alt="Book cover" class="book-cover">
+            <div v-else class="no-cover">No Cover</div>
+            <span class="book-title">{{ item.name }}</span>
+          </div>
+          <button class="delete-btn" @click.stop="deleteBook(item.key)">❌</button>
         </div>
+
       </div>
       <label for="fileUpload" class="upload-btn">
         📥
@@ -237,6 +245,7 @@ onMounted(async () => {
 .book-title {
   font-size: 14px;
   flex: 1;
+  max-width: 70%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -266,4 +275,45 @@ onMounted(async () => {
 .upload-btn:hover {
   background-color: #2563eb;
 }
+
+.book-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  background: white;
+  border-radius: 5px;
+  border: 1px solid black;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.book-item:hover {
+  background: #e5e5e5;
+}
+
+.book-info {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.delete-btn {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn:hover {
+  background-color: #dc2626;
+}
+
 </style>
