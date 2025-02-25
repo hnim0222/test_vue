@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { openDB } from "idb";
+import {openDB} from "idb";
 import ePub from "epubjs";
-import { ref, onMounted } from "vue";
+import {onMounted, ref} from "vue";
 
 const book = ref<ePub.Book | null>(null);
 const rendition = ref<ePub.Rendition | null>(null);
@@ -92,28 +92,29 @@ const closeBook = () => {
 const loadBooksList = async () => {
   try {
     const db = await getDB();
-    const tx = db.transaction(STORE_NAME, "readonly");
-    const store = tx.objectStore(STORE_NAME);
-    const allKeys = await store.getAllKeys();
+    const allKeys = await db.getAllKeys(STORE_NAME);
 
-    booksList.value = [];
-    for (const key of allKeys) {
-      const arrayBuffer = await store.get(key);
-      const tempBook = ePub(arrayBuffer);
-      const metadata = await tempBook.loaded.metadata;
-      const cover = await tempBook.coverUrl() ?? null;
+    // Dùng Promise.all để lấy dữ liệu song song
+    booksList.value = await Promise.all(
+        allKeys.map(async (key) => {
+          const arrayBuffer = await db.get(STORE_NAME, key);
+          const tempBook = ePub(arrayBuffer);
+          const metadata = await tempBook.loaded.metadata;
+          const cover = await tempBook.coverUrl() ?? null;
 
-      booksList.value.push({
-        key: key as string,
-        name: metadata.title || "Unknown Title",
-        cover: cover
-      });
-    }
+          return {
+            key: key as string,
+            name: metadata.title || "Unknown Title",
+            cover: cover
+          };
+        })
+    );
     console.log('Loaded books:', booksList.value.length);
   } catch (error) {
     console.error('Error loading books list:', error);
   }
 };
+
 
 const upload = async (e: Event) => {
   const target = e.target as HTMLInputElement;
@@ -132,7 +133,6 @@ onMounted(async () => {
 <template>
   <div class="app-container">
     <div id="root" class="reader">
-<!--      <button class="close-btn" @click="closeBook"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>-->
     </div>
     <div class="list-container" v-if="!isReaderOpen">
       <div class="books-list">
@@ -153,7 +153,7 @@ onMounted(async () => {
         </div>
       </div>
       <label for="fileUpload" class="upload-btn">
-        📥 Tải EPUB
+        📥
       </label>
       <input id="fileUpload" type="file" class="hidden" @change="upload" />
     </div>
