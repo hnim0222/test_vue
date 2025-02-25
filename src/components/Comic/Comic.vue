@@ -330,6 +330,7 @@ onBeforeUnmount(() => {
 
 .flex {
   display: flex;
+  justify-content: space-between
 }
 .flex-col {
   flex-direction: column;
