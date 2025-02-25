@@ -90,19 +90,6 @@ const playEpisode = async (videoUrl: string) => {
         unlockOrientation();
       }
     });
-
-    player.on("play", async () => {
-      if (window.innerWidth < 768) {
-        const videoElement = videoPlayer.value as HTMLVideoElement;
-        if (videoElement.requestFullscreen) {
-          await videoElement.requestFullscreen();
-        } else if ("webkitRequestFullscreen" in videoElement) {
-          await (videoElement as any).webkitRequestFullscreen();
-        } else {
-          console.warn("Fullscreen API không được hỗ trợ trên trình duyệt này.");
-        }
-      }
-    });
   }
 };
 
