@@ -29,7 +29,7 @@ let player: any = null;
 
 const fetchEpisode = async () => {
   try {
-    const slug = router.currentRoute.value.params.espisodeSlug;
+    const slug = router.currentRoute.value.params.episodeSlug;
     const response = await axios.get(`https://ophim1.com/phim/${slug}`);
     film.value = response.data.episodes[0]?.server_data ?? [];
 
@@ -68,7 +68,7 @@ const playEpisode = async (videoUrl: string) => {
   currentEpisode.value = videoUrl;
 
   // Lưu vào localStorage
-  const slug = router.currentRoute.value.params.espisodeSlug;
+  const slug = router.currentRoute.value.params.episodeSlug;
   localStorage.setItem(`lastWatched_${slug}`, videoUrl);
 
   await nextTick();

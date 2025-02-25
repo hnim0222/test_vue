@@ -27,7 +27,6 @@ onMounted(() => {
   window.addEventListener('scroll', handleScroll);
 });
 
-// Remove event listener when unmounted to avoid memory leaks
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
 });
@@ -57,9 +56,7 @@ onUnmounted(() => {
     </Tabs>
 
     <router-view v-slot="{ Component }">
-      <keep-alive name="fade" mode="out-in">
         <component :is="Component" />
-      </keep-alive>
     </router-view>
   </main>
 </template>
