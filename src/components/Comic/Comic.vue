@@ -153,6 +153,7 @@ const goToChapter = () => {
       }
     }).then(() => {
       localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
+      window.location.reload();
     });
   }
 };
@@ -190,6 +191,7 @@ const goToPreviousChapter = () => {
       }
     }).then(() => {
       localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
+      window.location.reload();
     });
   }
 };
@@ -227,6 +229,7 @@ const goToNextChapter = () => {
       }
     }).then(() => {
       localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
+      window.location.reload();
     });
   }
 };
@@ -243,7 +246,7 @@ const goToListChapter = () => {
 
 const goToHome = () => {
   router.push({
-    name: 'list-comic',
+    name: 'comic',
   });
 };
 
@@ -284,6 +287,139 @@ onBeforeUnmount(() => {
 
 
 <style scoped>
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text-center {
+  text-align: center;
+}
+.text-lg {
+  font-size: 1.125rem;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.text-red-500 {
+  color: #ef4444;
+}
+
+/* Title */
+.text-2xl {
+  font-size: 1.5rem;
+}
+.font-bold {
+  font-weight: 700;
+}
+.m-4 {
+  margin: 1rem;
+}
+.uppercase {
+  text-transform: uppercase;
+}
+.text-orange-500 {
+  color: #f97316;
+}
+.text-xl {
+  font-size: 1.25rem;
+}
+.text-gray-500 {
+  color: #6b7280;
+}
+
+.flex {
+  display: flex;
+}
+.flex-col {
+  flex-direction: column;
+}
+.items-center {
+  align-items: center;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.w-full {
+  width: 100%;
+}
+.object-cover {
+  object-fit: cover;
+}
+
+.fixed {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+}
+.bg-white {
+  background-color: white;
+}
+.p-1 {
+  padding: 0.25rem;
+}
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.bg-blue-500 {
+  background-color: #3b82f6;
+}
+.text-white {
+  color: white;
+}
+.p-2 {
+  padding: 0.5rem;
+}
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+.transition {
+  transition: all 0.3s ease-in-out;
+}
+.bg-blue-500:hover {
+  background-color: #2563eb;
+}
+.bg-gray-400 {
+  background-color: #9ca3af;
+}
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+/* Select */
+.p-2 {
+  padding: 0.5rem;
+}
+.border {
+  border: 1px solid #d1d5db;
+}
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+.text-black {
+  color: black;
+}
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+.focus\:outline-none:focus {
+  outline: none;
+}
+.focus\:ring-2:focus {
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+.focus\:ring-blue-500:focus {
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+/* Comic detail */
 .comic-detail {
   text-align: center;
 }
@@ -299,6 +435,7 @@ onBeforeUnmount(() => {
   font-weight: bold;
   font-size: 24px;
 }
+
 
 .fixed {
   position: fixed;

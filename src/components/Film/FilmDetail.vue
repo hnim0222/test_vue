@@ -20,6 +20,7 @@ let filmName = ref('');
 let director = ref('');
 let country = ref('');
 let actor = ref<string[]>([]);
+const status = ref('');
 
 const goToEpisode = () => {
   const slug = router.currentRoute.value.params.filmSlug;
@@ -41,6 +42,7 @@ onMounted(async () => {
     country.value = response.data.movie.country?.[0]?.name || 'Unknown Country';
     director.value = response.data.movie.director?.[0] || 'Unknown Director';
     actor.value = response.data.movie.actor || [];
+    status.value = response.data.movie.status;
   } catch (error) {
     console.error('Error fetching film data:', error);
   }
@@ -53,10 +55,16 @@ onMounted(async () => {
     <img :src="poster" alt="Film Poster" class="film-poster" />
     <div class="film-content" v-html="content"></div>
     <p v-if="country" class="film-detail">Xuất xứ: {{ country }}</p>
-    <p v-if="director" class="film-detail">Đạo diễn: {{ director }}</p>
+    <p v-if="director !== ''" class="film-detail">Đạo diễn: {{ director }}</p>
     <p v-if="actor.length > 0" class="film-detail">Diễn viên: {{ actor.join(', ') }}</p>
   </div>
-  <div class="watch" @click="goToEpisode()">Watch now</div>
+  <div
+      class="watch"
+      @click="status !== 'trailer' && goToEpisode()"
+      :class="{ disabled: status === 'trailer' }"
+  >
+    Watch now
+  </div>
 </template>
 
 <style scoped>
