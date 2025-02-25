@@ -2,14 +2,37 @@
   <div>
     <div v-if="loading">Loading...</div>
     <div v-else>
-      <div class="movie-list">
-        <div v-for="(movie, index) in movies" :key="index" class="movie-card" @click="goToDetail(movie.slug)">
-          <img :src="movie.poster_url" :alt="movie.name" class="movie-poster" />
-          <h3 class="movie-title">{{ movie.name }}</h3>
+      <div v-if="watchLaterMovies.length > 0" class="watch-later-container">
+        <h2>📌 Danh sách Xem Sau</h2>
+        <div class="watch-later-list">
+          <div v-for="(movie, index) in watchLaterMovies" :key="index" class="watch-later-card">
+            <img :src="movie.poster_url" :alt="movie.name" class="watch-later-poster" />
+            <h4 class="watch-later-title">{{ movie.name }}</h4>
+            <button class="remove-btn" @click="removeFromWatchLater(movie.slug)">❌</button>
+          </div>
         </div>
       </div>
 
-      <!-- Pagination Buttons -->
+      <div class="movie-list">
+        <div v-for="(movie, index) in movies" :key="index" class="movie-card">
+          <img
+              :src="movie.poster_url"
+              :alt="movie.name"
+              class="movie-poster"
+              @click="goToDetail(movie.slug)"
+          />
+          <div style="display: flex; justify-content: space-between">
+            <h3 class="movie-title" @click="goToDetail(movie.slug)" style="margin-right: 10px;">
+              {{ movie.name }}
+            </h3>
+            <button class="watch-later-btn" @click="addToWatchLater(movie)" style="margin-top: 4px;">
+              {{ isWatchLater(movie.slug) ? "✅" : "📌" }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
       <div class="pagination">
         <button @click="prevPage" :disabled="page <= 1">Previous</button>
         <span>Page {{ page }}</span>
@@ -27,33 +50,76 @@ const router = useRouter();
 const movies = ref<any[]>([]);
 const loading = ref(true);
 const page = ref(1);
+const watchLaterList = ref<string[]>([]);
+const watchLaterMovies = ref<any[]>([]);
 
+const loadWatchLaterList = () => {
+  watchLaterList.value = JSON.parse(localStorage.getItem("watchLater") || "[]");
+};
+
+// Tải danh sách phim từ API
 const fetchMoviesData = async () => {
   loading.value = true;
   try {
-    const response = await fetch(`https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=${page.value}`);
+    const response = await fetch(
+        `https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=${page.value}`
+    );
     const data = await response.json();
     if (data.status && data.items) {
       movies.value = data.items.map((movie: any) => ({
         name: movie.name,
         slug: movie.slug,
-        poster_url: 'https://img.ophim.live/uploads/movies/' + movie.poster_url,
+        poster_url: "https://img.ophim.live/uploads/movies/" + movie.poster_url,
       }));
+      syncWatchLaterMovies();
     }
   } catch (error) {
-    console.error("Lỗi khi lấy dữ liệu phim:", error);
+    console.error("❌ Lỗi khi lấy dữ liệu phim:", error);
   } finally {
     loading.value = false;
   }
 };
 
+// Đồng bộ danh sách phim "Xem Sau" với API
+const syncWatchLaterMovies = () => {
+  watchLaterMovies.value = movies.value.filter((movie) =>
+      watchLaterList.value.includes(movie.slug)
+  );
+};
+
+// Kiểm tra phim đã được lưu vào "Xem Sau" chưa
+const isWatchLater = (slug: string) => {
+  return watchLaterList.value.includes(slug);
+};
+
+// Thêm phim vào danh sách "Xem Sau"
+const addToWatchLater = (movie: any) => {
+  if (!watchLaterList.value.includes(movie.slug)) {
+    watchLaterList.value.push(movie.slug);
+    localStorage.setItem("watchLater", JSON.stringify(watchLaterList.value));
+    syncWatchLaterMovies();
+    alert(`📌 Đã thêm "${movie.name}" vào danh sách Xem Sau!`);
+  } else {
+    alert(`✅ "${movie.name}" đã có trong danh sách Xem Sau.`);
+  }
+};
+
+// Xóa phim khỏi danh sách "Xem Sau"
+const removeFromWatchLater = (slug: string) => {
+  watchLaterList.value = watchLaterList.value.filter((s) => s !== slug);
+  localStorage.setItem("watchLater", JSON.stringify(watchLaterList.value));
+  syncWatchLaterMovies();
+};
+
+// Chuyển đến trang chi tiết phim
 const goToDetail = (slug: string) => {
   router.push({
-    name: 'film-detail',
-    params: { filmSlug: slug }
+    name: "film-detail",
+    params: { filmSlug: slug },
   });
 };
 
+// Phân trang
 const nextPage = () => {
   page.value++;
 };
@@ -61,12 +127,66 @@ const prevPage = () => {
   if (page.value > 1) page.value--;
 };
 
+// Khi trang thay đổi, tải lại danh sách phim
 watch(page, fetchMoviesData);
 
-onMounted(fetchMoviesData);
+onMounted(() => {
+  loadWatchLaterList();
+  fetchMoviesData();
+});
 </script>
 
 <style scoped>
+/* Danh sách Xem Sau */
+.watch-later-container {
+  padding: 20px;
+  background: #f8f8f8;
+  border-bottom: 2px solid #ddd;
+}
+
+.watch-later-container h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.watch-later-list {
+  display: flex;
+  overflow-x: auto;
+  gap: 15px;
+  padding: 10px;
+}
+
+.watch-later-card {
+  position: relative;
+  flex: 0 0 auto;
+  width: 120px;
+  text-align: center;
+}
+
+.watch-later-poster {
+  width: 100%;
+  border-radius: 5px;
+}
+
+.watch-later-title {
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* Danh sách phim chính */
 .movie-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -94,6 +214,7 @@ onMounted(fetchMoviesData);
   font-size: 18px;
   margin-top: 10px;
   font-weight: bold;
+  cursor: pointer;
 }
 
 /* Pagination */
