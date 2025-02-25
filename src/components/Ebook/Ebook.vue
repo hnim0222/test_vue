@@ -30,7 +30,7 @@ const saveToIndexedDB = async (file: File) => {
 
     const tempBook = ePub(arrayBuffer);
     const metadata = await tempBook.loaded.metadata;
-    const cover = tempBook.cover ? await tempBook.coverUrl() : null;
+    const cover = await tempBook.coverUrl() ?? null;
 
     booksList.value.push({
       key: bookKey,
@@ -101,7 +101,7 @@ const loadBooksList = async () => {
       const arrayBuffer = await store.get(key);
       const tempBook = ePub(arrayBuffer);
       const metadata = await tempBook.loaded.metadata;
-      const cover = tempBook.cover ? await tempBook.coverUrl() : null;
+      const cover = await tempBook.coverUrl() ?? null;
 
       booksList.value.push({
         key: key as string,
