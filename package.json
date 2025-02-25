@@ -16,6 +16,7 @@
     "@tailwindcss/vite": "^4.0.3",
     "axios": "^1.7.9",
     "epubjs": "^0.3.93",
+    "idb": "^8.0.2",
     "lightningcss": "^1.29.1",
     "pinia": "^2.3.1",
     "tailwindcss": "^4.0.3",
