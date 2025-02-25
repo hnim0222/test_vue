@@ -94,7 +94,6 @@ const loadBooksList = async () => {
     const db = await getDB();
     const allKeys = await db.getAllKeys(STORE_NAME);
 
-    // Dùng Promise.all để lấy dữ liệu song song
     booksList.value = await Promise.all(
         allKeys.map(async (key) => {
           const arrayBuffer = await db.get(STORE_NAME, key);
@@ -115,6 +114,17 @@ const loadBooksList = async () => {
   }
 };
 
+const deleteBook = async (bookKey: string) => {
+  try {
+    const db = await getDB();
+    await db.delete(STORE_NAME, bookKey);
+    booksList.value = booksList.value.filter((book) => book.key !== bookKey);
+    console.log(`Deleted book: ${bookKey}`);
+  } catch (error) {
+    console.error('Error deleting book:', error);
+  }
+};
+
 
 const upload = async (e: Event) => {
   const target = e.target as HTMLInputElement;
@@ -124,8 +134,22 @@ const upload = async (e: Event) => {
   await saveToIndexedDB(file);
 };
 
+const showBackButton = ref(false);
+
+const handleScroll = () => {
+  const container = document.getElementById("root");
+  if (container) {
+    showBackButton.value = container.scrollTop > 50;
+  }
+};
+
 onMounted(async () => {
   await loadBooksList();
+
+  const rootElement = document.getElementById("root");
+  if (rootElement) {
+    rootElement.addEventListener("scroll", handleScroll);
+  }
 });
 
 </script>
@@ -133,6 +157,7 @@ onMounted(async () => {
 <template>
   <div class="app-container">
     <div id="root" class="reader">
+      <button class="back-btn" @click="closeBook"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
     </div>
     <div class="list-container" v-if="!isReaderOpen">
       <div class="books-list">
@@ -140,17 +165,15 @@ onMounted(async () => {
             v-for="item in booksList"
             :key="item.key"
             class="book-item"
-            @click="loadBook(item.key)"
         >
-          <img
-              v-if="item.cover"
-              :src="item.cover"
-              alt="Book cover"
-              class="book-cover"
-          >
-          <div v-else class="no-cover">No Cover</div>
-          <span class="book-title">{{ item.name }}</span>
+          <div @click="loadBook(item.key)" class="book-info">
+            <img v-if="item.cover" :src="item.cover" alt="Book cover" class="book-cover">
+            <div v-else class="no-cover">No Cover</div>
+            <span class="book-title">{{ item.name }}</span>
+          </div>
+          <button class="delete-btn" @click.stop="deleteBook(item.key)">❌</button>
         </div>
+
       </div>
       <label for="fileUpload" class="upload-btn">
         📥
@@ -237,6 +260,7 @@ onMounted(async () => {
 .book-title {
   font-size: 14px;
   flex: 1;
+  max-width: 70%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -266,4 +290,61 @@ onMounted(async () => {
 .upload-btn:hover {
   background-color: #2563eb;
 }
+
+.book-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  background: white;
+  border-radius: 5px;
+  border: 1px solid black;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.book-item:hover {
+  background: #e5e5e5;
+}
+
+.book-info {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.delete-btn {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn:hover {
+  background-color: #dc2626;
+}
+
+.back-btn {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 1000;
+  transition: background-color 0.2s ease;
+}
+
+.back-btn:hover {
+  background-color: #2563eb;
+}
+
+
 </style>
