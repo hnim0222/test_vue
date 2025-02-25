@@ -153,7 +153,6 @@ const goToChapter = () => {
       }
     }).then(() => {
       localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
-      window.location.reload();
     });
   }
 };
@@ -191,7 +190,6 @@ const goToPreviousChapter = () => {
       }
     }).then(() => {
       localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
-      window.location.reload();
     });
   }
 };
@@ -229,7 +227,6 @@ const goToNextChapter = () => {
       }
     }).then(() => {
       localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
-      window.location.reload();
     });
   }
 };

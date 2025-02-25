@@ -37,7 +37,7 @@ const fetchMoviesData = async () => {
       movies.value = data.items.map((movie: any) => ({
         name: movie.name,
         slug: movie.slug,
-        poster_url: 'https://img.ophim.live/uploads/movie/' + movie.poster_url,
+        poster_url: 'https://img.ophim.live/uploads/movies/' + movie.poster_url,
       }));
     }
   } catch (error) {
