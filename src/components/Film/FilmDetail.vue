@@ -26,8 +26,8 @@ const goToEpisode = () => {
   const slug = router.currentRoute.value.params.filmSlug;
 
   router.push({
-    name: 'espisode',
-    params: { espisodeSlug: slug },
+    name: 'episode',
+    params: { episodeSlug: slug },
   });
 };
 

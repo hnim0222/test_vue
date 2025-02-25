@@ -52,13 +52,13 @@ const changeTab = (tab: string) => {
   }
 };
 
-onMounted(() => {
-  const savedTab = localStorage.getItem("currentTab");
-  const selectedTab = tabs.find(t => t.name === savedTab);
-  if (selectedTab) {
-    router.push(selectedTab.path);
-  }
-});
+// onMounted(() => {
+//   const savedTab = localStorage.getItem("currentTab");
+//   const selectedTab = tabs.find(t => t.name === savedTab);
+//   if (selectedTab) {
+//     router.push(selectedTab.path);
+//   }
+// });
 
 const goBack = () => {
   router.back();
