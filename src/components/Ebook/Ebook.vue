@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {openDB} from "idb";
+import { openDB } from "idb";
 import ePub from "epubjs";
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 
 const book = ref<ePub.Book | null>(null);
 const rendition = ref<ePub.Rendition | null>(null);
@@ -30,16 +30,16 @@ const saveToIndexedDB = async (file: File) => {
 
     const tempBook = ePub(arrayBuffer);
     const metadata = await tempBook.loaded.metadata;
-    const cover = await tempBook.coverUrl() ?? null;
+    const cover = (await tempBook.coverUrl()) ?? null;
 
     booksList.value.push({
       key: bookKey,
       name: metadata.title || file.name,
-      cover: cover
+      cover: cover,
     });
-    console.log('Saved book with key:', bookKey);
+    console.log("Saved book with key:", bookKey);
   } catch (error) {
-    console.error('Error saving book:', error);
+    console.error("Error saving book:", error);
   }
 };
 
@@ -72,9 +72,9 @@ const loadBook = async (bookKey: string) => {
     }
 
     await rendition.value.display();
-    console.log('Book loaded successfully:', bookKey);
+    console.log("Book loaded successfully:", bookKey);
   } catch (error) {
-    console.error('Error loading book:', error);
+    console.error("Error loading book:", error);
   }
 };
 
@@ -99,18 +99,18 @@ const loadBooksList = async () => {
           const arrayBuffer = await db.get(STORE_NAME, key);
           const tempBook = ePub(arrayBuffer);
           const metadata = await tempBook.loaded.metadata;
-          const cover = await tempBook.coverUrl() ?? null;
+          const cover = (await tempBook.coverUrl()) ?? null;
 
           return {
             key: key as string,
             name: metadata.title || "Unknown Title",
-            cover: cover
+            cover: cover,
           };
         })
     );
-    console.log('Loaded books:', booksList.value.length);
+    console.log("Loaded books:", booksList.value.length);
   } catch (error) {
-    console.error('Error loading books list:', error);
+    console.error("Error loading books list:", error);
   }
 };
 
@@ -121,10 +121,9 @@ const deleteBook = async (bookKey: string) => {
     booksList.value = booksList.value.filter((book) => book.key !== bookKey);
     console.log(`Deleted book: ${bookKey}`);
   } catch (error) {
-    console.error('Error deleting book:', error);
+    console.error("Error deleting book:", error);
   }
 };
-
 
 const upload = async (e: Event) => {
   const target = e.target as HTMLInputElement;
@@ -151,33 +150,46 @@ onMounted(async () => {
     rootElement.addEventListener("scroll", handleScroll);
   }
 });
-
 </script>
 
 <template>
   <div class="app-container">
     <div id="root" class="reader">
-      <button class="back-btn" @click="closeBook"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+      <button class="back-btn" @click="closeBook">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-x"
+        >
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
     </div>
     <div class="list-container" v-if="!isReaderOpen">
       <div class="books-list">
-        <div
-            v-for="item in booksList"
-            :key="item.key"
-            class="book-item"
-        >
+        <div v-for="item in booksList" :key="item.key" class="book-item">
           <div @click="loadBook(item.key)" class="book-info">
-            <img v-if="item.cover" :src="item.cover" alt="Book cover" class="book-cover">
+            <img
+                v-if="item.cover"
+                :src="item.cover"
+                alt="Book cover"
+                class="book-cover"
+            />
             <div v-else class="no-cover">No Cover</div>
             <span class="book-title">{{ item.name }}</span>
           </div>
           <button class="delete-btn" @click.stop="deleteBook(item.key)">❌</button>
         </div>
-
       </div>
-      <label for="fileUpload" class="upload-btn">
-        📥
-      </label>
+      <label for="fileUpload" class="upload-btn">📥</label>
       <input id="fileUpload" type="file" class="hidden" @change="upload" />
     </div>
   </div>
@@ -271,7 +283,7 @@ onMounted(async () => {
 }
 
 .upload-btn {
-  position:  fixed;
+  position: fixed;
   bottom: 10px;
   right: 10px;
   margin: 16px;
@@ -345,6 +357,4 @@ onMounted(async () => {
 .back-btn:hover {
   background-color: #2563eb;
 }
-
-
 </style>
