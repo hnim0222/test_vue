@@ -18,6 +18,7 @@ let content = ref('');
 const film = ref<Movie | null>(null);
 let filmName = ref('');
 let director = ref('');
+let category = ref([]);
 let country = ref('');
 let actor = ref<string[]>([]);
 const status = ref('');
@@ -36,12 +37,13 @@ onMounted(async () => {
   try {
     const response = await axios.get(`https://ophim1.com/phim/${slug}`);
     film.value = response.data.movie;
-    poster.value = response.data.movie.poster_url;
+    poster.value = response.data.movie.poster_url1;
     filmName.value = response.data.movie.name || 'Unknown Title';
     content.value = response.data.movie.content || '';
     country.value = response.data.movie.country?.[0]?.name || 'Unknown Country';
-    director.value = response.data.movie.director?.[0] || 'Unknown Director';
+    director.value = response.data.movie.director?.[0] || '';
     actor.value = response.data.movie.actor || [];
+    category.value = response.data.movie.category?.map((cat: any) => cat.name) || '';
     status.value = response.data.movie.status;
   } catch (error) {
     console.error('Error fetching film data:', error);
@@ -55,6 +57,7 @@ onMounted(async () => {
     <img :src="poster" alt="Film Poster" class="film-poster" />
     <div class="film-content" v-html="content"></div>
     <p v-if="country" class="film-detail">Xuất xứ: {{ country }}</p>
+    <p v-if="category.length > 0" class="film-detail ">Thể loại: {{ category.join(', ') }}</p>
     <p v-if="director !== ''" class="film-detail">Đạo diễn: {{ director }}</p>
     <p v-if="actor.length > 0" class="film-detail">Diễn viên: {{ actor.join(', ') }}</p>
   </div>
