@@ -65,7 +65,7 @@ const loadBook = async (bookKey: string) => {
       spread: "none",
     });
 
-    rendition.value.hooks.content.register((contents) => {
+    rendition.value?.hooks.content.register((contents: { iframe: HTMLIFrameElement }) => {
       const iframe = contents.iframe;
       if (iframe) {
         iframe.setAttribute("sandbox", "allow-scripts allow-same-origin");
