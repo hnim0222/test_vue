@@ -37,7 +37,7 @@ const tabs = [
   { name: "clock", label: "Clock", path: "/" },
   { name: "comic", label: "Comic", path: "/comic" },
   { name: "film", label: "Film", path: "/film" },
-  { name: "ebook", label: "Ebook", path: "/ebook" }
+  // { name: "ebook", label: "Ebook", path: "/ebook" }
 ];
 
 const currentTab = computed(() => route.name);
