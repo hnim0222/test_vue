@@ -37,7 +37,7 @@ onMounted(async () => {
   try {
     const response = await axios.get(`https://ophim1.com/phim/${slug}`);
     film.value = response.data.movie;
-    poster.value = response.data.movie.poster_url1;
+    poster.value = response.data.movie.poster_url;
     filmName.value = response.data.movie.name || 'Unknown Title';
     content.value = response.data.movie.content || '';
     country.value = response.data.movie.country?.[0]?.name || 'Unknown Country';
