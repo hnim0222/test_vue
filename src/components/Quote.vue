@@ -1,16 +1,14 @@
 <template>
   <div class="quote-card container">
-    <!-- Div to hold the quote -->
     <p class="quote">"{{ quote }}"</p>
     <p class="translated-quote">"{{ translatedQuote }}"</p>
     <p class="author" v-if="author">— {{ author }} —</p>
 
-    <!-- New div for image -->
     <div v-if="quoteImage" class="quote-image">
       <img :src="quoteImage" alt="Quote Image" />
     </div>
 
-    <button @click="fetchQuote">Trích dẫn mới</button>
+    <button @click="fetchQuote" style="display: none;">Trích dẫn mới</button>
   </div>
 </template>
 
@@ -23,7 +21,6 @@ const author = ref('');
 const translatedQuote = ref('');
 const quoteImage = ref('');
 
-// Fetch a random quote
 const fetchQuote = async () => {
   try {
     const response = await axios.get('https://api.allorigins.win/get?url=' + encodeURIComponent('https://zenquotes.io/api/random'));
@@ -42,7 +39,6 @@ const fetchQuote = async () => {
   }
 };
 
-// Fetch quote image
 const fetchQuoteImage = async () => {
   try {
     const response = await axios.get('https://api.allorigins.win/get?url=' + encodeURIComponent('https://zenquotes.io/api/image'));

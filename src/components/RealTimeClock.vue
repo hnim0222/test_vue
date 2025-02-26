@@ -1,52 +1,146 @@
 <template>
-  <div class="clock">
-    <p class=time>{{ currentTime }}</p>
+  <div class="clock-container">
+    <Weather />
+    <div class="analog-clock">
+      <div class="hand hour" :style="hourStyle"></div>
+      <div class="hand minute" :style="minuteStyle"></div>
+      <div class="hand second" :style="secondStyle"></div>
+      <div class="center-dot"></div>
+    </div>
+    <div class="digital-clock">
+      <p class="time">{{ currentTime }}</p>
+      <p class="date">{{ currentDate }}</p>
+      <p class="lunar-date">Âm lịch: {{ lunarDate }}</p>
+    </div>
+    <Quote />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import Quote from "@/components/Quote.vue";
+import Weather from "@/components/Weather.vue";
 
-// Define a reactive variable for current time
-const currentTime = ref('');
+const currentTime = ref("");
+const currentDate = ref("");
+const lunarDate = ref("");
 
-// Function to update the current time
+const now = ref(new Date());
+
 const updateTime = () => {
-  const now = new Date();
-  currentTime.value = now.toLocaleTimeString(); // Format the time
+  now.value = new Date();
+  currentTime.value = now.value.toLocaleTimeString();
+  currentDate.value = now.value.toLocaleDateString("vi-VN", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const lunarFormatter = new Intl.DateTimeFormat("vi-VN-u-ca-chinese", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  lunarDate.value = lunarFormatter.format(now.value);
 };
 
-// Set up interval to update time every second
 let timer: ReturnType<typeof setInterval> | null = null;
 
 onMounted(() => {
-  updateTime(); // Initialize the time on mount
-  timer = setInterval(updateTime, 1000); // Update time every second
+  updateTime();
+  timer = setInterval(updateTime, 1000);
 });
 
 onBeforeUnmount(() => {
-  // Clear the interval when the component is unmounted
-  if (timer) {
-    clearInterval(timer);
-  }
+  if (timer) clearInterval(timer);
 });
+
+// Đồng hồ kim
+const hourStyle = computed(() => ({
+  transform: `rotate(${(now.value.getHours() % 12) * 30 + now.value.getMinutes() * 0.5}deg)`,
+}));
+
+const minuteStyle = computed(() => ({
+  transform: `rotate(${now.value.getMinutes() * 6}deg)`,
+}));
+
+const secondStyle = computed(() => ({
+  transform: `rotate(${now.value.getSeconds() * 6}deg)`,
+}));
 </script>
 
 <style scoped>
-.clock {
-  font-family: 'Share Tech Mono', monospace;
-  color: #ffffff;
-  text-align: center;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  color: #60c4e4;
-  text-shadow: 0 0 20px rgba(10, 175, 230, 1),  0 0 20px rgba(10, 175, 230, 0);
+.clock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Arial", sans-serif;
 }
-  .time {
-    letter-spacing: 0.05em;
-    font-size: 80px;
-    padding: 5px 0;
-  }
+
+/* Đồng hồ kim */
+.analog-clock {
+  width: 120px;
+  height: 120px;
+  border: 3px solid #333;
+  border-radius: 50%;
+  position: relative;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.hand {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  transform-origin: bottom;
+  background: black;
+  border-radius: 5px;
+}
+
+.hour {
+  width: 5px;
+  height: 30px;
+  background: #333;
+}
+
+.minute {
+  width: 3px;
+  height: 40px;
+  background: #666;
+}
+
+.second {
+  width: 2px;
+  height: 45px;
+  background: red;
+}
+
+.center-dot {
+  width: 8px;
+  height: 8px;
+  background: black;
+  border-radius: 50%;
+  position: absolute;
+}
+
+/* Đồng hồ số */
+.digital-clock {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.time {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+}
+
+.date, .lunar-date {
+  font-size: 16px;
+  color: #666;
+}
 </style>

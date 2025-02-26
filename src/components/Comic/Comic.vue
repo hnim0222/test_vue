@@ -344,6 +344,7 @@ onBeforeUnmount(() => {
 
 .w-full {
   width: 100%;
+  max-width: 650px;
 }
 .object-cover {
   object-fit: cover;
