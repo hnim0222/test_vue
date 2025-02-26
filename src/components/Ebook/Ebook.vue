@@ -65,6 +65,13 @@ const loadBook = async (bookKey: string) => {
       spread: "none",
     });
 
+    rendition.value.hooks.content.register((contents) => {
+      const iframe = contents.iframe;
+      if (iframe) {
+        iframe.setAttribute("sandbox", "allow-scripts allow-same-origin");
+      }
+    });
+
     const rootElement = document.getElementById("root");
     if (rootElement) {
       rootElement.style.display = "block";
