@@ -50,12 +50,7 @@ const router = useRouter();
 const movies = ref<any[]>([]);
 const loading = ref(true);
 const page = ref(1);
-const watchLaterList = ref<string[]>([]);
 const watchLaterMovies = ref<any[]>([]);
-
-const loadWatchLaterList = () => {
-  watchLaterList.value = JSON.parse(localStorage.getItem("watchLater") || "[]");
-};
 
 const fetchMoviesData = async () => {
   loading.value = true;
@@ -68,7 +63,7 @@ const fetchMoviesData = async () => {
       movies.value = data.items.map((movie: any) => ({
         name: movie.name,
         slug: movie.slug,
-        poster_url: "https://img.ophim.live/uploads/movies/" + movie.poster_url,
+        poster_url: "https://img.ophim.live/uploads/movie/" + movie.poster_url,
       }));
       syncWatchLaterMovies();
     }
@@ -80,27 +75,28 @@ const fetchMoviesData = async () => {
 };
 
 const syncWatchLaterMovies = () => {
-  watchLaterMovies.value = movies.value.filter((movie) =>
-      watchLaterList.value.includes(movie.slug)
-  );
+  watchLaterMovies.value = JSON.parse(localStorage.getItem("watchLater") || "[]");
 };
 
+
 const isWatchLater = (slug: string) => {
-  return watchLaterList.value.includes(slug);
+  return watchLaterMovies.value.some((movie) => movie.slug === slug);
 };
 
 const addToWatchLater = (movie: any) => {
-  if (!watchLaterList.value.includes(movie.slug)) {
-    watchLaterList.value.push(movie.slug);
-    localStorage.setItem("watchLater", JSON.stringify(watchLaterList.value));
-    syncWatchLaterMovies();
+  if (!isWatchLater(movie.slug)) {
+    watchLaterMovies.value.push({
+      slug: movie.slug,
+      name: movie.name,
+      poster_url: movie.poster_url,
+    });
+    localStorage.setItem("watchLater", JSON.stringify(watchLaterMovies.value));
   }
 };
 
 const removeFromWatchLater = (slug: string) => {
-  watchLaterList.value = watchLaterList.value.filter((s) => s !== slug);
-  localStorage.setItem("watchLater", JSON.stringify(watchLaterList.value));
-  syncWatchLaterMovies();
+  watchLaterMovies.value = watchLaterMovies.value.filter(movie => movie.slug !== slug);
+  localStorage.setItem("watchLater", JSON.stringify(watchLaterMovies.value));
 };
 
 const goToDetail = (slug: string) => {
@@ -120,14 +116,13 @@ const prevPage = () => {
 watch(page, fetchMoviesData);
 
 onMounted(() => {
-  loadWatchLaterList();
   fetchMoviesData();
+  syncWatchLaterMovies();
 });
 </script>
 
 
 <style scoped>
-/* Danh sách Xem Sau */
 .watch-later-container {
   padding: 20px;
   background: #f8f8f8;
