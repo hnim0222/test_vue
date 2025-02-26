@@ -13,6 +13,7 @@ const routes = [
         path: '/',
         name: 'clock',
         component: Clock,
+        props: true,
     },
     {
         path: '/comic',
@@ -35,6 +36,9 @@ const routes = [
         path: '/chapter/:comicSlug/:chapterName',
         name: 'comic-detail',
         component: ComicDetail,
+        meta: {
+            hideTabs: true
+        },
         props: true
     },
     {
@@ -47,6 +51,9 @@ const routes = [
         path: '/film/episode/:episodeSlug',
         name: 'episode',
         component: Episode,
+        meta: {
+            hideTabs: true
+        },
         props: true
     },
     {

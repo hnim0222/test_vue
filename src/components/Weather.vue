@@ -1,7 +1,7 @@
 <template>
   <div class="weather-container">
     <h2>🌤️ Dữ liệu thời tiết</h2>
-    <button @click="getWeather" class="mt-2 hidden">Lấy dữ liệu thời tiết</button>
+    <button @click="getWeather" class="mt-2" style="display: none">Lấy dữ liệu thời tiết</button>
     <div v-if="loading">⏳ Đang tải...</div>
     <div v-if="error" class="error">❌ {{ error }}</div>
     <div v-if="weatherData">
@@ -13,14 +13,14 @@
     </div>
 
     <!-- Dữ liệu từ Open-Meteo -->
-    <div v-if="openMeteoData" class="mt-5">
-      <h3>🌡️ Dự báo nhiệt độ theo giờ</h3>
-      <ul>
-        <li v-for="(temp, index) in openMeteoData.hourly.temperature_2m.slice(0, 24)" :key="index">
-          🕒 {{ formatDateTime(openMeteoData.hourly.time[index]) }}: {{ temp }}°C
-        </li>
-      </ul>
-    </div>
+<!--    <div v-if="openMeteoData" class="mt-5">-->
+<!--      <h3>🌡️ Dự báo nhiệt độ theo giờ</h3>-->
+<!--      <ul>-->
+<!--        <li v-for="(temp, index) in openMeteoData.hourly.temperature_2m.slice(0, 24)" :key="index">-->
+<!--          🕒 {{ formatDateTime(openMeteoData.hourly.time[index]) }}: {{ temp }}°C-->
+<!--        </li>-->
+<!--      </ul>-->
+<!--    </div>-->
   </div>
 </template>
 

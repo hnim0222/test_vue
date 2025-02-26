@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';  // Importing useRouter for navigation
+import {ref, onMounted, onUnmounted, computed} from 'vue';
+import { useRoute } from "vue-router";
 import RealTimeClock from './components/RealTimeClock.vue'
 import Quote from "./components/Quote.vue"
 import Weather from "./components/Weather.vue"
@@ -9,7 +9,7 @@ import ListFilm from "@/components/Film/ListFilm.vue";
 import Ebook from "@/components/Ebook/Ebook.vue";
 import ListComic from "@/components/Comic/ListComic.vue";
 import FilmDetail from "@/components/Film/FilmDetail.vue"; // Adjusted component import for comic list
-
+const route = useRoute();
 const isVisible = ref(false);
 
 const scrollToTop = () => {
@@ -23,6 +23,11 @@ const handleScroll = () => {
   isVisible.value = window.scrollY > 100; // Button appears when scrolled more than 100px
 };
 
+const shouldHideTabContent = computed(() => {
+  console.log(route.name);
+  return route.name === "clock";
+});
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
 });
@@ -34,7 +39,7 @@ onUnmounted(() => {
 
 <template class="bg-white">
   <main>
-    <Tabs>
+    <Tabs v-if="!route.meta.hideTabs">
       <template #clock>
         <RealTimeClock />
       </template>
@@ -55,7 +60,7 @@ onUnmounted(() => {
       </template>
     </Tabs>
 
-    <router-view v-slot="{ Component }">
+    <router-view v-slot="{ Component }" v-if="!shouldHideTabContent">
         <component :is="Component" />
     </router-view>
   </main>
