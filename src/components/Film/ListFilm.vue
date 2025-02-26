@@ -6,8 +6,10 @@
         <h2>📌 Danh sách Xem Sau</h2>
         <div class="watch-later-list">
           <div v-for="(movie, index) in watchLaterMovies" :key="index" class="watch-later-card">
-            <img :src="movie.poster_url" :alt="movie.name" class="watch-later-poster" />
-            <h4 class="watch-later-title" @click="goToDetail(movie.slug)">{{ movie.name }}</h4>
+            <div @click="goToDetail(movie.slug)">
+              <img :src="movie.poster_url" :alt="movie.name" class="watch-later-poster" />
+              <h4 class="watch-later-title" >{{ movie.name }}</h4>
+            </div>
             <button class="remove-btn" @click="removeFromWatchLater(movie.slug)">❌</button>
           </div>
         </div>
