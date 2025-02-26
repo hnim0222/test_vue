@@ -12,7 +12,9 @@
       <p class="date">{{ currentDate }}</p>
       <p class="lunar-date">Âm lịch: {{ lunarDate }}</p>
     </div>
-    <Quote />
+    <div style="padding: 0 20px;">
+      <Quote />
+    </div>
   </div>
 </template>
 
