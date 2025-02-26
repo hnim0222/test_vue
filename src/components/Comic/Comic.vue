@@ -26,6 +26,8 @@
           <button @click="goToListChapter" class="bg-blue-500 text-white p-2 rounded-lg transition duration-300 ease-in-out">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></svg>
           </button>
+          <button @click="goToHome" class="bg-blue-500 text-white p-2 rounded-lg transition duration-300 ease-in-out">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>          </button>
 
           <select v-model="selectedChapter" @change="goToChapter()" class="p-2 border rounded-lg text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out">
             <option v-for="(ch, index) in listChapters" :key="index" :value="ch.chapter_name">
@@ -242,6 +244,12 @@ const goToListChapter = () => {
   });
 };
 
+const goToHome = () => {
+  router.push({
+    name: 'comic',
+  });
+};
+
 
 let lastScrollY = 0
 
@@ -279,6 +287,140 @@ onBeforeUnmount(() => {
 
 
 <style scoped>
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text-center {
+  text-align: center;
+}
+.text-lg {
+  font-size: 1.125rem;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.text-red-500 {
+  color: #ef4444;
+}
+
+/* Title */
+.text-2xl {
+  font-size: 1.5rem;
+}
+.font-bold {
+  font-weight: 700;
+}
+.m-4 {
+  margin: 1rem;
+}
+.uppercase {
+  text-transform: uppercase;
+}
+.text-orange-500 {
+  color: #f97316;
+}
+.text-xl {
+  font-size: 1.25rem;
+}
+.text-gray-500 {
+  color: #6b7280;
+}
+
+.flex {
+  display: flex;
+  justify-content: space-between
+}
+.flex-col {
+  flex-direction: column;
+}
+.items-center {
+  align-items: center;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.w-full {
+  width: 100%;
+}
+.object-cover {
+  object-fit: cover;
+}
+
+.fixed {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+}
+.bg-white {
+  background-color: white;
+}
+.p-1 {
+  padding: 0.25rem;
+}
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.bg-blue-500 {
+  background-color: #3b82f6;
+}
+.text-white {
+  color: white;
+}
+.p-2 {
+  padding: 0.5rem;
+}
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+.transition {
+  transition: all 0.3s ease-in-out;
+}
+.bg-blue-500:hover {
+  background-color: #2563eb;
+}
+.bg-gray-400 {
+  background-color: #9ca3af;
+}
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+/* Select */
+.p-2 {
+  padding: 0.5rem;
+}
+.border {
+  border: 1px solid #d1d5db;
+}
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+.text-black {
+  color: black;
+}
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+.focus\:outline-none:focus {
+  outline: none;
+}
+.focus\:ring-2:focus {
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+.focus\:ring-blue-500:focus {
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+/* Comic detail */
 .comic-detail {
   text-align: center;
 }
@@ -294,6 +436,7 @@ onBeforeUnmount(() => {
   font-weight: bold;
   font-size: 24px;
 }
+
 
 .fixed {
   position: fixed;
