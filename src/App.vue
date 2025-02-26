@@ -23,11 +23,6 @@ const handleScroll = () => {
   isVisible.value = window.scrollY > 100; // Button appears when scrolled more than 100px
 };
 
-const shouldHideTabContent = computed(() => {
-  console.log(route.name);
-  return route.name === "clock";
-});
-
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
 });
@@ -43,12 +38,6 @@ onUnmounted(() => {
       <template #clock>
         <RealTimeClock />
       </template>
-      <template #weather>
-        <Weather />
-      </template>
-      <template #quote>
-        <Quote />
-      </template>
       <template #comic>
         <ListComic />
       </template>
@@ -60,7 +49,7 @@ onUnmounted(() => {
       </template>
     </Tabs>
 
-    <router-view v-slot="{ Component }" v-if="!shouldHideTabContent">
+    <router-view v-slot="{ Component }">
         <component :is="Component" />
     </router-view>
   </main>
