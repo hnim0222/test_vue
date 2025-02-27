@@ -8,27 +8,22 @@
     />
     <button @click="goToSearchComic" class="search-button">Tìm kiếm</button>
 
-    <h2 class="flex text-2xl font-semibold ml-2">
-      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark-check">
-        <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-        <path d="m9 10 2 2 4-4"/>
-      </svg> Favourite
+    <h2 class="flex text-2xl font-semibold ml-2" v-if="favouriteComics.length > 0">
+      <span style="font-size: 22px; font-weight: 600;">❤️ Favourite</span>
     </h2>
 
-    <div v-for="comic in favouriteComics" :key="comic._id" class="comic-wrapper">
-      <div class="comic-item">
-        <img :src="comic.image1" :alt="comic.name" class="comic-poster" />
-        <h3 class="comic-name">{{ comic.name }}</h3>
+    <div class="list-favourite">
+      <div v-for="comic in favouriteComics" :key="comic._id" class="comic-wrapper" @click="goToListChapter(comic)">
+        <div class="comic-item">
+          <img :src="comic.image" :alt="comic.name" class="comic-poster" />
+          <h3 class="comic-name">{{ comic.name }}</h3>
+        </div>
+        <button @click.stop="toggleFavourite(comic)" class="remove-favourite">X</button>
       </div>
-
-      <!-- Nút xóa -->
-      <button @click.stop="toggleFavourite(comic)" class="remove-favourite">X</button>
     </div>
 
-
-
     <hr>
-    <h2 class="flex text-2xl font-semibold p-2">Danh sách truyện</h2>
+    <h2 class="flex text-2xl font-semibold p-2" style="padding: 10px 0; font-size: 22px; font-weight: 600;">Danh sách truyện</h2>
     <div class="comic-list">
       <div v-for="comic in comics" :key="comic._id" class="comic-item" @click="goToListChapter(comic)">
         <img :src="comic.image" :alt="comic.name" class="comic-poster" />
@@ -59,7 +54,7 @@ const comics = ref<any[]>([]);
 const page = ref(1);
 const loading = ref(false);
 const favouriteComics = ref<any[]>([]);
-const search = ref(""); // Biến lưu từ khóa tìm kiếm
+const search = ref("");
 
 const getComics = async () => {
   if (loading.value) return;
@@ -73,7 +68,7 @@ const getComics = async () => {
       comics.value.push(
           ...data.data.items.map((comic: any) => ({
             ...comic,
-            image1: `https://img.otruyenapi.com/uploads/comics/${comic.thumb_url}`
+            image: `https://img.otruyenapi.com/uploads/comics/${comic.thumb_url}`
           }))
       );
     }
@@ -147,14 +142,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Thêm ô tìm kiếm */
 .search-input {
   width: 100%;
   max-width: 300px;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  margin: 10px;
+  margin: 20px 10px 10px 10px;
 }
 
 .search-button {
@@ -199,7 +193,6 @@ onMounted(() => {
   text-overflow: ellipsis;
 }
 
-/* Danh sách comics */
 .comic-list {
   display: flex;
   flex-wrap: wrap;
@@ -245,10 +238,13 @@ onMounted(() => {
 .favourite-button:not(.favourite) {
   background: lightgray;
 }
+
 .comic-wrapper {
-  position: relative; /* Để căn chỉnh nút "X" */
   display: inline-block;
+  align-items: center;
+  position: relative;
 }
+
 
 .remove-favourite {
   position: absolute;
@@ -270,6 +266,28 @@ onMounted(() => {
 
 .remove-favourite:hover {
   background-color: darkred;
+}
+
+.list-favourite {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 15px;
+  overflow-x: auto;
+  padding: 10px;
+  white-space: nowrap;
+}
+
+.list-favourite::-webkit-scrollbar {
+  display: none;
+}
+
+.list-favourite::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.list-favourite::-webkit-scrollbar-track {
+  background: #f1f1f1;
 }
 
 
