@@ -1,15 +1,21 @@
 <template>
   <div class="comic-chapter">
-    <h1 class="mb-7 font-bold text-2xl">{{ comicName }}</h1>
+    <h1 class="comic-title">{{ comicName }}</h1>
+    <p>Chapter: {{ totalChapter }}</p>
+    <p v-if="selectedChapterName !== ''">Chapter hiện tại: {{ selectedChapterName }}</p>
 
-    <!-- Hiển thị loading khi dữ liệu chưa tải xong -->
+    <img :src="thumbnail" :alt="comicName" class="comic-thumbnail"  style="border-radius: 5px; margin: 20px 0;"/>
+   <div  style="padding-top: 20px; padding-bottom: 30px; font-size: 18px; height: 200px; overflow: scroll;">
+     <p>Tác giả: {{ author }}</p>
+     <p style="margin: 10px 0;">Thể loại: {{ category.join(', ') }}</p>
+     <p>Mô tả: {{ content }} </p>
+   </div>
+
     <div v-if="loading">Loading chapters...</div>
-
-    <!-- Hiển thị danh sách chapter -->
     <div v-else>
       <div v-if="chapters.length === 0">No chapters available.</div>
-
       <div
+          style="margin-top: 20px;"
           v-for="(chapter, index) in paginatedChapters"
           :key="index"
           class="chapter-item"
@@ -19,11 +25,9 @@
         <p>Chapter {{ chapter.chapter_name }}</p>
       </div>
 
-      <!-- Phân trang -->
       <div class="pagination">
         <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
 
-        <!-- Danh sách số trang -->
         <span
             v-for="page in visiblePages"
             :key="page"
@@ -56,6 +60,11 @@ const props = defineProps({
 const chapters = ref<any[]>([]);
 const loading = ref(true);
 const comicName = ref('');
+let author = ref<string[]>([]);
+const category = ref([]);
+let content = ref('');
+const thumbnail = ref('');
+const totalChapter = ref(0);
 
 const selectedChapterName = ref<string>('');
 
@@ -102,7 +111,14 @@ onMounted(async () => {
   try {
     const response = await axios.get(`https://otruyenapi.com/v1/api/truyen-tranh/${props.comicSlug}`);
     const data = response.data;
+
     comicName.value = data.data.item.name;
+    author.value = data.data.item.author[0];
+    category.value = data.data.item.category.map((cat: any) => cat.name);
+    content.value = data.data.seoOnPage.descriptionHead;
+    thumbnail.value = `https://img.otruyenapi.com/uploads/comics/${data.data.item.thumb_url}`;
+    totalChapter.value = data.data.item.chapters[0].server_data.length - 1;
+
     if (data.data && data.data.item?.chapters?.[0]?.server_data) {
       chapters.value = data.data.item.chapters[0].server_data;
     }
@@ -155,6 +171,11 @@ const goToChapterDetail = (chapterApi: any, chapterName: string) => {
 <style scoped>
 .comic-chapter {
   padding: 20px;
+}
+
+.comic-title {
+  font-size: 22px;
+  font-weight: bold;
 }
 
 .chapter-item {

@@ -7,6 +7,7 @@ import FilmDetail from "@/components/Film/FilmDetail.vue";
 import Clock from "@/components/RealTimeClock.vue";
 import Ebook from '@/components/Ebook/Ebook.vue';
 import Episode from "@/components/Film/Episode.vue";
+import SearchComic from "@/components/Comic/SearchComic.vue";
 
 const routes = [
     {
@@ -39,6 +40,12 @@ const routes = [
         meta: {
             hideTabs: true
         },
+        props: true
+    },
+    {
+        path: '/comic/search/:searchKeyword',
+        name: 'comic-search',
+        component: SearchComic,
         props: true
     },
     {

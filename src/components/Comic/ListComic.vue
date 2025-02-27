@@ -1,38 +1,45 @@
 <template>
   <div>
-    <h2 class="flex text-2xl font-semibold ml-2" style="display: flex;font-weight: 600; font-size: 20px;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark-check"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/><path d="m9 10 2 2 4-4"/></svg>      Favourite
+    <input
+        v-model="search"
+        placeholder="Tìm kiếm truyện..."
+        class="search-input"
+        @keyup.enter="goToSearchComic"
+    />
+    <button @click="goToSearchComic" class="search-button">Tìm kiếm</button>
+
+    <h2 class="flex text-2xl font-semibold ml-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark-check">
+        <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+        <path d="m9 10 2 2 4-4"/>
+      </svg> Favourite
     </h2>
-    <div class="favourite-list">
-      <div
-          v-for="comic in favouriteComics"
-          :key="comic._id"
-          class="comic-item"
-          @click="goToListChapter(comic)"
-      >
-        <img :src="comic.image" :alt="comic.name" class="comic-poster" />
+
+    <div v-for="comic in favouriteComics" :key="comic._id" class="comic-wrapper">
+      <div class="comic-item">
+        <img :src="comic.image1" :alt="comic.name" class="comic-poster" />
         <h3 class="comic-name">{{ comic.name }}</h3>
       </div>
+
+      <!-- Nút xóa -->
+      <button @click.stop="toggleFavourite(comic)" class="remove-favourite">X</button>
     </div>
+
+
 
     <hr>
     <h2 class="flex text-2xl font-semibold p-2">Danh sách truyện</h2>
     <div class="comic-list">
-      <div
-          v-for="comic in comics"
-          :key="comic._id"
-          class="comic-item"
-          @click="goToListChapter(comic)"
-      >
+      <div v-for="comic in comics" :key="comic._id" class="comic-item" @click="goToListChapter(comic)">
         <img :src="comic.image" :alt="comic.name" class="comic-poster" />
         <h3 class="comic-name">{{ comic.name }}</h3>
 
         <button
             @click.stop="toggleFavourite(comic)"
-            :class="{'favourite': isFavourite(comic)}"
+            :class="{ 'favourite': isFavourite(comic) }"
             class="favourite-button"
         >
-          {{ isFavourite(comic) ? 'Remove from Favourites' : 'Add to Favourites' }}
+          {{ isFavourite(comic) ? '❤️ Bỏ yêu thích' : '🤍 Thêm vào yêu thích' }}
         </button>
       </div>
     </div>
@@ -44,14 +51,15 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
-import {useRouter} from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const comics = ref<any[]>([]);
 const page = ref(1);
 const loading = ref(false);
 const favouriteComics = ref<any[]>([]);
+const search = ref(""); // Biến lưu từ khóa tìm kiếm
 
 const getComics = async () => {
   if (loading.value) return;
@@ -65,7 +73,7 @@ const getComics = async () => {
       comics.value.push(
           ...data.data.items.map((comic: any) => ({
             ...comic,
-            image: `https://img.otruyenapi.com/uploads/comics/${comic.thumb_url}`
+            image1: `https://img.otruyenapi.com/uploads/comics/${comic.thumb_url}`
           }))
       );
     }
@@ -118,6 +126,15 @@ const goToListChapter = (comic: any) => {
   }
 };
 
+const goToSearchComic = () => {
+  if (!search.value.trim()) return;
+
+  router.push({
+    name: 'comic-search',
+    params: { searchKeyword: search.value }
+  });
+};
+
 const nextPage = () => {
   page.value++;
   getComics();
@@ -130,6 +147,29 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Thêm ô tìm kiếm */
+.search-input {
+  width: 100%;
+  max-width: 300px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin: 10px;
+}
+
+.search-button {
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background-color: #0056b3;
+}
+
 .favourite-list {
   display: flex;
   overflow-x: auto;
@@ -188,38 +228,49 @@ onMounted(() => {
 }
 
 .favourite-button {
-  margin-top: 10px;
-  padding: 5px;
+  margin-top: 5px;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
   font-size: 12px;
-  border: none;
-  cursor: pointer;
-  background-color: #ff9f00;
-  color: white;
   border-radius: 5px;
+  transition: background 0.3s ease-in-out;
 }
 
-.favourite-button:hover {
-  background-color: #e68900;
+.favourite {
+  background: red;
+  color: white;
 }
 
-.favourite-button.favourite {
-  background-color: #007bff;
+.favourite-button:not(.favourite) {
+  background: lightgray;
+}
+.comic-wrapper {
+  position: relative; /* Để căn chỉnh nút "X" */
+  display: inline-block;
 }
 
-.next-button {
-  display: block;
-  margin: 20px auto;
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #007bff;
+.remove-favourite {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: red;
   color: white;
   border: none;
-  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.next-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.remove-favourite:hover {
+  background-color: darkred;
 }
+
+
 </style>
