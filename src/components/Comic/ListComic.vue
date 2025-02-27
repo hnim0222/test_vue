@@ -290,5 +290,15 @@ onMounted(() => {
   background: #f1f1f1;
 }
 
+.next-button{
+  padding: 10px 15px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 20px 10px;
+}
 
 </style>
