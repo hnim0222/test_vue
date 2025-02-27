@@ -117,7 +117,7 @@ onMounted(async () => {
     category.value = data.data.item.category.map((cat: any) => cat.name);
     content.value = data.data.seoOnPage.descriptionHead;
     thumbnail.value = `https://img.otruyenapi.com/uploads/comics/${data.data.item.thumb_url}`;
-    totalChapter.value = data.data.item.chapters[0].server_data.length - 1;
+    totalChapter.value = data.data.item.chapters[0].server_data.slice(-1)[0].chapter_name;
 
     if (data.data && data.data.item?.chapters?.[0]?.server_data) {
       chapters.value = data.data.item.chapters[0].server_data;
