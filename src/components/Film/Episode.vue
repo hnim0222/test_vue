@@ -12,6 +12,16 @@
       </button>
     </div>
   </div>
+
+  <div>
+      <p style="padding: 20px 20px 10px 10px ; font-size: 20px; font-weight: 600;">List Watch Later</p>
+      <div v-if="watchLaterMovies.length > 0" class="list-watch-later">
+        <div v-for="(movie, index) in watchLaterMovies" :key="index" class="watch-later-item" @click="goToDetail(movie.slug)">
+          <img :src="movie.poster_url" alt="Film Poster" class="film-poster" />
+            {{ movie.name }}
+        </div>
+      </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -27,14 +37,23 @@ const videoPlayer = ref<HTMLVideoElement | null>(null);
 const currentEpisode = ref<string>("");
 let player: any = null;
 
+interface Movie {
+  slug: string;
+  name: string;
+  poster_url: string;
+}
+
+const watchLaterMovies = ref<Movie[]>([]);
+
 const fetchEpisode = async () => {
   try {
-    const slug = router.currentRoute.value.params.episodeSlug;
+    const slug = router.currentRoute.value.params.episodeSlug as string;
     const response = await axios.get(`https://ophim1.com/phim/${slug}`);
     film.value = response.data.episodes[0]?.server_data ?? [];
 
     const savedEpisode = localStorage.getItem(`lastWatched_${slug}`);
     const lastEpisode = savedEpisode || film.value[0]?.link_m3u8;
+    syncWatchLaterMovies();
 
     if (lastEpisode) {
       await playEpisode(lastEpisode);
@@ -42,6 +61,13 @@ const fetchEpisode = async () => {
   } catch (error) {
     console.error("Error fetching episodes:", error);
   }
+};
+
+const goToDetail = (slug: string) => {
+  router.push({
+    name: "film-detail",
+    params: { filmSlug: slug },
+  });
 };
 
 const lockOrientation = async (orientation: "landscape" | "portrait") => {
@@ -54,10 +80,21 @@ const lockOrientation = async (orientation: "landscape" | "portrait") => {
   }
 };
 
-
 const unlockOrientation = () => {
   if ("orientation" in screen) {
     screen.orientation.unlock();
+  }
+};
+
+const syncWatchLaterMovies = () => {
+  const currentSlug = router.currentRoute.value.params.episodeSlug as string;
+
+  try {
+    const savedMovies = JSON.parse(localStorage.getItem("watchLater") || "[]") as Movie[];
+    watchLaterMovies.value = savedMovies.filter((movie) => movie.slug !== currentSlug);
+  } catch (error) {
+    console.error("Lỗi khi đọc watchLater từ localStorage:", error);
+    watchLaterMovies.value = [];
   }
 };
 
@@ -66,8 +103,7 @@ const playEpisode = async (videoUrl: string) => {
 
   currentEpisode.value = videoUrl;
 
-  // Lưu vào localStorage
-  const slug = router.currentRoute.value.params.episodeSlug;
+  const slug = router.currentRoute.value.params.episodeSlug as string;
   localStorage.setItem(`lastWatched_${slug}`, videoUrl);
 
   await nextTick();
@@ -143,5 +179,22 @@ onMounted(fetchEpisode);
 
 .button.active {
   background-color: #ff6600;
+}
+.watch-later-item{
+  display: flex;
+  justify-content: start;
+  padding: 10px;
+  background-color: #f8f8f8;
+  border-bottom: 2px solid #ddd;
+  border-radius: 5px;
+  margin: 10px;
+}
+
+.film-poster{
+  width: 50px;
+  height: 70px;
+  object-fit: cover;
+  margin-right: 12px;
+  border-radius: 5px;
 }
 </style>
