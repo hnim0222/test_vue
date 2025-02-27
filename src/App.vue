@@ -8,7 +8,8 @@ import Tabs from "./components/Tab.vue"
 import ListFilm from "@/components/Film/ListFilm.vue";
 import Ebook from "@/components/Ebook/Ebook.vue";
 import ListComic from "@/components/Comic/ListComic.vue";
-import FilmDetail from "@/components/Film/FilmDetail.vue"; // Adjusted component import for comic list
+import FilmDetail from "@/components/Film/FilmDetail.vue";
+import Music from "@/components/Spotify/Music.vue"; // Adjusted component import for comic list
 const route = useRoute();
 const isVisible = ref(false);
 
@@ -46,6 +47,9 @@ onUnmounted(() => {
       </template>
       <template #ebook>
         <Ebook />
+      </template>
+      <template #spotify>
+        <Music />
       </template>
     </Tabs>
 
