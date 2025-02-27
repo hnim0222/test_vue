@@ -4,40 +4,30 @@
     <p>Chapter: {{ totalChapter }}</p>
     <p v-if="selectedChapterName !== ''">Chapter hiện tại: {{ selectedChapterName }}</p>
 
-    <img :src="thumbnail" :alt="comicName" class="comic-thumbnail"  style="border-radius: 5px; margin: 20px 0;"/>
-   <div  style="padding-top: 20px; padding-bottom: 30px; font-size: 18px; height: 200px; overflow: scroll;">
-     <p>Tác giả: {{ author }}</p>
-     <p style="margin: 10px 0;">Thể loại: {{ category.join(', ') }}</p>
-     <p>Mô tả: {{ content }} </p>
-   </div>
+    <img :src="thumbnail" :alt="comicName" class="comic-thumbnail" style="border-radius: 5px; margin: 20px 0;"/>
+    <div style="padding-top: 20px; padding-bottom: 30px; font-size: 18px; height: 200px; overflow: scroll;">
+      <p>Tác giả: {{ author }}</p>
+      <p style="margin: 10px 0;">Thể loại: {{ category.join(', ') }}</p>
+      <p>Mô tả: {{ content }} </p>
+    </div>
 
     <div v-if="loading">Loading chapters...</div>
     <div v-else>
-      <div v-if="chapters.length === 0">No chapters available.</div>
-      <div
-          style="margin-top: 20px;"
-          v-for="(chapter, index) in paginatedChapters"
-          :key="index"
-          class="chapter-item"
-          :class="{'highlight': chapter.chapter_name === selectedChapterName}"
-          @click="goToChapterDetail(chapter.chapter_api_data, chapter.chapter_name)"
-      >
-        <p>Chapter {{ chapter.chapter_name }}</p>
-      </div>
+      <button @click="goToChapterDetail(firstChapter.chapter_api_data, firstChapter.chapter_name)">
+        {{ selectedChapterName ? `Đọc tiếp chap ${selectedChapterName}` : 'Đọc từ đầu' }}
+      </button>
+      <button @click="showChapterModal = true">Mở danh sách chap</button>
+    </div>
 
-      <div class="pagination">
-        <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
-
-        <span
-            v-for="page in visiblePages"
-            :key="page"
-            @click="changePage(page)"
-            :class="{ 'active-page': page === currentPage }"
-        >
-          {{ page }}
-        </span>
-
-        <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+    <div v-if="showChapterModal" class="modal-overlay" @click.self="showChapterModal = false">
+      <div class="modal-content">
+        <h2>Danh sách Chapter</h2>
+        <ul>
+          <li v-for="(chapter, index) in chapters" :key="index" @click="goToChapterDetail(chapter.chapter_api_data, chapter.chapter_name)">
+            Chapter {{ chapter.chapter_name }}
+          </li>
+        </ul>
+        <button @click="showChapterModal = false">Đóng</button>
       </div>
     </div>
   </div>
@@ -65,47 +55,10 @@ const category = ref([]);
 let content = ref('');
 const thumbnail = ref('');
 const totalChapter = ref(0);
-
 const selectedChapterName = ref<string>('');
+const showChapterModal = ref(false);
 
-const currentPage = ref(1);
-const chaptersPerPage = 50;
-
-const totalPages = computed(() => Math.ceil(chapters.value.length / chaptersPerPage));
-
-const paginatedChapters = computed(() => {
-  const start = (currentPage.value - 1) * chaptersPerPage;
-  return chapters.value.slice(start, start + chaptersPerPage);
-});
-
-const visiblePages = computed(() => {
-  const pages = [];
-  const maxVisible = 5;
-  let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2));
-  let end = Math.min(totalPages.value, start + maxVisible - 1);
-  if (end - start < maxVisible - 1) {
-    start = Math.max(1, end - maxVisible + 1);
-  }
-
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-  return pages;
-});
-
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++;
-  }
-};
-const prevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--;
-  }
-};
-const changePage = (page: number) => {
-  currentPage.value = page;
-};
+const firstChapter = computed(() => chapters.value.length > 0 ? chapters.value[0] : null);
 
 onMounted(async () => {
   try {
@@ -164,8 +117,6 @@ const goToChapterDetail = (chapterApi: any, chapterName: string) => {
     localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
   });
 };
-
-
 </script>
 
 <style scoped>
@@ -178,37 +129,13 @@ const goToChapterDetail = (chapterApi: any, chapterName: string) => {
   font-weight: bold;
 }
 
-.chapter-item {
-  padding: 10px;
-  margin-bottom: 8px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.chapter-item:hover {
-  background-color: #eaeaea;
-}
-
-.chapter-item.highlight {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  gap: 10px;
-}
-
 button {
   padding: 8px 12px;
-  border: 1px solid #ccc;
+  margin: 10px;
+  background-color: #1db954;
+  color: white;
+  border: none;
   cursor: pointer;
-  background-color: #f8f8f8;
 }
 
 button:disabled {
@@ -216,17 +143,46 @@ button:disabled {
   cursor: not-allowed;
 }
 
-span {
-  padding: 5px 10px;
-  border-radius: 3px;
-  cursor: pointer;
-  background: #fff;
-  border: 1px solid #ccc;
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.active-page {
-  background: #007bff;
-  color: #fff;
-  font-weight: bold;
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 80%;
+  height: 70%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content ul {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+  max-height: 60%;
+  overflow-y: auto;
+}
+
+.modal-content li {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+
+.modal-content li:hover {
+  background: #f0f0f0;
 }
 </style>
