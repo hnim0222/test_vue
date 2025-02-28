@@ -4,50 +4,45 @@
     <p>Chapter: {{ totalChapter }}</p>
     <p v-if="selectedChapterName !== ''">Chapter hiện tại: {{ selectedChapterName }}</p>
 
-    <img :src="thumbnail" :alt="comicName" class="comic-thumbnail"  style="border-radius: 5px; margin: 20px 0;"/>
-   <div  style="padding-top: 20px; padding-bottom: 30px; font-size: 18px; height: 200px; overflow: scroll;">
-     <p>Tác giả: {{ author }}</p>
-     <p style="margin: 10px 0;">Thể loại: {{ category.join(', ') }}</p>
-     <p>Mô tả: {{ content }} </p>
-   </div>
+    <img :src="thumbnail" :alt="comicName" class="comic-thumbnail" style="border-radius: 5px; margin: 20px 0;"/>
+    <div style="padding-top: 20px; padding-bottom: 30px; font-size: 18px;">
+      <p>Tác giả: {{ author }}</p>
+      <p style="margin: 10px 0;">Thể loại: {{ category.join(', ') }}</p>
+      <p>Mô tả: {{ content }} </p>
+    </div>
 
     <div v-if="loading">Loading chapters...</div>
-    <div v-else>
-      <div v-if="chapters.length === 0">No chapters available.</div>
-      <div
-          style="margin-top: 20px;"
-          v-for="(chapter, index) in paginatedChapters"
-          :key="index"
-          class="chapter-item"
-          :class="{'highlight': chapter.chapter_name === selectedChapterName}"
-          @click="goToChapterDetail(chapter.chapter_api_data, chapter.chapter_name)"
-      >
-        <p>Chapter {{ chapter.chapter_name }}</p>
-      </div>
+    <div v-else class="btn-area">
+      <button @click="goToChapterDetail(firstChapter.chapter_api_data, firstChapter.chapter_name)" class="btn-read">
+        {{ selectedChapterName ? `Đọc tiếp chap ${selectedChapterName}` : 'Đọc từ đầu' }}
+      </button>
+      <button class="list-icon" @click="showChapterModal = true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-logs"><path d="M13 12h8"/><path d="M13 18h8"/><path d="M13 6h8"/><path d="M3 12h1"/><path d="M3 18h1"/><path d="M3 6h1"/><path d="M8 12h1"/><path d="M8 18h1"/><path d="M8 6h1"/></svg></button>
+    </div>
 
-      <div class="pagination">
-        <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
-
-        <span
-            v-for="page in visiblePages"
-            :key="page"
-            @click="changePage(page)"
-            :class="{ 'active-page': page === currentPage }"
-        >
-          {{ page }}
-        </span>
-
-        <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+    <div v-if="showChapterModal" class="modal-overlay" @click.self="showChapterModal = false">
+      <div class="modal-content">
+        <h2>Danh sách Chapter</h2>
+        <input type="text" v-model="searchQuery" placeholder="Search Chapter..."  class="search-input"/>
+        <ul>
+          <li v-for="(chapter, index) in filteredChapters"
+              ref="chapterRefs"
+              :key="index" @click="goToChapterDetail(chapter.chapter_api_data, chapter.chapter_name)"
+              :class="{ 'selected-chapter': chapter.chapter_name === selectedChapterName }">
+            Chapter {{ chapter.chapter_name }}
+          </li>
+        </ul>
+        <button @click="showChapterModal = false" class="list-icon" style="margin-top: 10px;">Đóng</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 
+const searchQuery = ref("");
 const router = useRouter();
 
 const props = defineProps({
@@ -60,52 +55,33 @@ const props = defineProps({
 const chapters = ref<any[]>([]);
 const loading = ref(true);
 const comicName = ref('');
-let author = ref<string[]>([]);
+const author = ref<string[]>([]);
 const category = ref([]);
-let content = ref('');
+const content = ref('');
 const thumbnail = ref('');
 const totalChapter = ref(0);
-
 const selectedChapterName = ref<string>('');
+const showChapterModal = ref(false);
+const chapterRefs = ref<HTMLElement[]>([]);
 
-const currentPage = ref(1);
-const chaptersPerPage = 50;
+const firstChapter = computed(() => chapters.value.length > 0 ? chapters.value[0] : null);
 
-const totalPages = computed(() => Math.ceil(chapters.value.length / chaptersPerPage));
-
-const paginatedChapters = computed(() => {
-  const start = (currentPage.value - 1) * chaptersPerPage;
-  return chapters.value.slice(start, start + chaptersPerPage);
+const filteredChapters = computed(() => {
+  return chapters.value.filter(chapter =>
+      chapter.chapter_name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
 });
 
-const visiblePages = computed(() => {
-  const pages = [];
-  const maxVisible = 5;
-  let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2));
-  let end = Math.min(totalPages.value, start + maxVisible - 1);
-  if (end - start < maxVisible - 1) {
-    start = Math.max(1, end - maxVisible + 1);
-  }
+const focusSelectedChapter = () => {
+  nextTick(() => {
+    const index = filteredChapters.value.findIndex(chapter => chapter.chapter_name === selectedChapterName.value);
+    if (index !== -1 && chapterRefs.value[index]) {
+      chapterRefs.value[index].scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
+};
 
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-  return pages;
-});
-
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++;
-  }
-};
-const prevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--;
-  }
-};
-const changePage = (page: number) => {
-  currentPage.value = page;
-};
+watch(filteredChapters, focusSelectedChapter, { immediate: true });
 
 onMounted(async () => {
   try {
@@ -164,8 +140,6 @@ const goToChapterDetail = (chapterApi: any, chapterName: string) => {
     localStorage.setItem('savedChapters', JSON.stringify(savedChapters));
   });
 };
-
-
 </script>
 
 <style scoped>
@@ -178,37 +152,21 @@ const goToChapterDetail = (chapterApi: any, chapterName: string) => {
   font-weight: bold;
 }
 
-.chapter-item {
-  padding: 10px;
-  margin-bottom: 8px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.chapter-item:hover {
-  background-color: #eaeaea;
-}
-
-.chapter-item.highlight {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  gap: 10px;
-}
-
 button {
   padding: 8px 12px;
-  border: 1px solid #ccc;
+  margin: 10px;
+  background-color: #1db954;
+  color: white;
+  border: none;
   cursor: pointer;
-  background-color: #f8f8f8;
+}
+
+.selected-chapter {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  color: #007bff;
+  padding: 5px;
+  border-radius: 5px;
 }
 
 button:disabled {
@@ -216,17 +174,83 @@ button:disabled {
   cursor: not-allowed;
 }
 
-span {
-  padding: 5px 10px;
-  border-radius: 3px;
-  cursor: pointer;
-  background: #fff;
-  border: 1px solid #ccc;
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.active-page {
-  background: #007bff;
-  color: #fff;
-  font-weight: bold;
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 80%;
+  height: auto;
+  max-height: 70%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content ul {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+  max-height: 60%;
+  overflow-y: auto;
+}
+
+.modal-content li {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+
+.modal-content li:hover {
+  background: #f0f0f0;
+}
+
+.btn-read{
+  padding: 10px 12px;
+  margin: 10px 20px;
+  background-color: #1db954;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.list-icon {
+  padding: 8px 12px;
+  margin: 10px;
+  background-color: #1db954;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.btn-area{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.search-input{
+  width: 100%;
+  max-width: 300px;
+  padding: 8px;
+  margin-bottom: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin: 20px 10px 10px 10px;
 }
 </style>
