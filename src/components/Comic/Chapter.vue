@@ -13,10 +13,15 @@
 
     <div v-if="loading">Loading chapters...</div>
     <div v-else class="btn-area">
-      <button @click="goToChapterDetail(firstChapter.chapter_api_data, firstChapter.chapter_name)" class="btn-read">
+      <button @click="selectedChapterName ? goToChapterDetail(selectedChapterApi, selectedChapterName) : goToChapterDetail(firstChapter.chapter_api_data, firstChapter.chapter_name)" class="btn-read">
         {{ selectedChapterName ? `Đọc tiếp chap ${selectedChapterName}` : 'Đọc từ đầu' }}
       </button>
       <button class="list-icon" @click="showChapterModal = true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-logs"><path d="M13 12h8"/><path d="M13 18h8"/><path d="M13 6h8"/><path d="M3 12h1"/><path d="M3 18h1"/><path d="M3 6h1"/><path d="M8 12h1"/><path d="M8 18h1"/><path d="M8 6h1"/></svg></button>
+      <button
+      @click="toggleFavourite(dataForAdd)"
+      class="list-icon">
+        {{ isFavourite(comicSlug) ? '❤️' : '🤍' }}
+      </button>
     </div>
 
     <div v-if="showChapterModal" class="modal-overlay" @click.self="showChapterModal = false">
@@ -63,14 +68,25 @@ const totalChapter = ref(0);
 const selectedChapterName = ref<string>('');
 const showChapterModal = ref(false);
 const chapterRefs = ref<HTMLElement[]>([]);
+const dataForAdd = ref<any>({});
+const selectedChapterApi = ref('');
 
 const firstChapter = computed(() => chapters.value.length > 0 ? chapters.value[0] : null);
+const favouriteComics = ref<any[]>([]);
 
 const filteredChapters = computed(() => {
   return chapters.value.filter(chapter =>
       chapter.chapter_name.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
+
+const getFavouriteComics = () => {
+  favouriteComics.value = JSON.parse(localStorage.getItem('favouriteComics') || '[]');
+};
+
+const isFavourite = (slug: any) => {
+  return favouriteComics.value.some(fave => fave.slug === slug);
+};
 
 const focusSelectedChapter = () => {
   nextTick(() => {
@@ -81,12 +97,27 @@ const focusSelectedChapter = () => {
   });
 };
 
+const toggleFavourite = (comic: any) => {
+  if (!comic?._id) return;
+
+  const index = favouriteComics.value.findIndex(fave => fave._id === comic._id);
+  if (index === -1) {
+    favouriteComics.value.push(comic);
+  } else {
+    favouriteComics.value.splice(index, 1);
+  }
+  localStorage.setItem('favouriteComics', JSON.stringify(favouriteComics.value));
+};
+
+
+
 watch(filteredChapters, focusSelectedChapter, { immediate: true });
 
 onMounted(async () => {
   try {
     const response = await axios.get(`https://otruyenapi.com/v1/api/truyen-tranh/${props.comicSlug}`);
     const data = response.data;
+    dataForAdd.value = data.data.item || {};
 
     comicName.value = data.data.item.name;
     author.value = data.data.item.author[0];
@@ -103,6 +134,7 @@ onMounted(async () => {
     const savedChapter = savedChapters.find((ch: any) => ch.slug === props.comicSlug);
     if (savedChapter) {
       selectedChapterName.value = savedChapter.chapterName;
+      selectedChapterApi.value = savedChapter.chapterApi;
     }
   } catch (error) {
     console.error("Error fetching chapters:", error);
@@ -110,6 +142,8 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+onMounted(getFavouriteComics);
 
 const goToChapterDetail = (chapterApi: any, chapterName: string) => {
   router.push({
@@ -248,7 +282,6 @@ button:disabled {
   width: 100%;
   max-width: 300px;
   padding: 8px;
-  margin-bottom: 5px;
   border: 1px solid #ddd;
   border-radius: 5px;
   margin: 20px 10px 10px 10px;

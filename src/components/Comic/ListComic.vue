@@ -22,6 +22,11 @@
       </div>
     </div>
 
+
+    <h2>📖Truyện vừa đọc</h2>
+    <div class="list-favourite">
+
+    </div>
     <hr>
     <h2 class="flex text-2xl font-semibold p-2" style="padding: 10px 0; font-size: 22px; font-weight: 600;">Danh sách truyện</h2>
     <div class="comic-list">
@@ -96,6 +101,10 @@ const toggleFavourite = (comic: any) => {
   localStorage.setItem('favouriteComics', JSON.stringify(savedFavourites));
   getFavouriteComics();
 };
+let historyComics = ref<any[]>([]);
+const getHistoryComics = () => {
+   historyComics.value = JSON.parse(localStorage.getItem('savedChapters') || '[]');
+};
 
 const isFavourite = (comic: any) => {
   return favouriteComics.value.some((fave: any) => fave._id === comic._id);
@@ -138,6 +147,7 @@ const nextPage = () => {
 onMounted(() => {
   getComics();
   getFavouriteComics();
+  getHistoryComics();
 });
 </script>
 
