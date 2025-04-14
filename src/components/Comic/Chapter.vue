@@ -1,4 +1,18 @@
 <template>
+  <div class="bottom-buttons">
+    <button @click="goBack" class="nav-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 15h-6v4l-7-7 7-7v4h6v6z"/>
+      </svg>
+      Quay lại
+    </button>
+    <button @click="goHome" class="nav-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+      </svg>
+      Trang chủ
+    </button>
+  </div>
   <div class="comic-chapter">
     <h1 class="comic-title">{{ comicName }}</h1>
     <p>Chapter: {{ totalChapter }}</p>
@@ -49,6 +63,10 @@ import { useRouter } from 'vue-router';
 
 const searchQuery = ref("");
 const router = useRouter();
+
+const goBack = () => router.back();
+const goHome = () => router.push('/comic');
+
 
 const props = defineProps({
   comicSlug: {
@@ -189,7 +207,7 @@ const goToChapterDetail = (chapterApi: any, chapterName: string) => {
 button {
   padding: 8px 12px;
   margin: 10px;
-  background-color: #1db954;
+  background-color: #007bff;
   color: white;
   border: none;
   cursor: pointer;
@@ -255,7 +273,7 @@ button:disabled {
 .btn-read{
   padding: 10px 12px;
   margin: 10px 20px;
-  background-color: #1db954;
+  background-color: #007bff;
   color: white;
   border: none;
   cursor: pointer;
@@ -265,7 +283,7 @@ button:disabled {
 .list-icon {
   padding: 8px 12px;
   margin: 10px;
-  background-color: #1db954;
+  background-color: #007bff;
   color: white;
   border: none;
   cursor: pointer;
@@ -286,4 +304,33 @@ button:disabled {
   border-radius: 5px;
   margin: 20px 10px 10px 10px;
 }
+.bottom-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.nav-btn:hover {
+  background-color: #0056b3;
+}
+
+.nav-btn svg {
+  stroke: white;
+}
+
+
 </style>
