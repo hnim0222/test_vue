@@ -17,21 +17,22 @@
     </div>
 
     <!-- Favorites Section -->
-    <section v-if="favouriteComics.length > 0" class="section">
+    <section v-if="favouriteComics.length > 0" class="section favorites">
       <div class="section-header">
         <h2 class="section-title">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="red" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>          Yêu thích
         </h2>
       </div>
-      <div class="comic-grid">
-        <div v-for="comic in favouriteComics" :key="'fav-'+comic._id" class="comic-card">
+      <div class="horizontal-scroll">
+        <div v-for="comic in favouriteComics" :key="'fav-'+comic._id" class="comic-card horizontal-card">
           <div class="comic-poster-container" @click="goToListChapter(comic)">
-            <img :src="comic.image" :alt="comic.name" class="comic-poster" />
+            <img :src="comic.image" :alt="comic.name" class="comic-poster" v-img-error />
             <div class="comic-overlay">
               <button class="read-button">Đọc tiếp</button>
             </div>
             <div class="favourite-badge" @click.stop="toggleFavourite(comic)">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eraser-icon lucide-eraser"><path d="M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21"/><path d="m5.082 11.09 8.828 8.828"/></svg>            </div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eraser-icon lucide-eraser"><path d="M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21"/><path d="m5.082 11.09 8.828 8.828"/></svg>
+            </div>
           </div>
           <h3 class="comic-title">{{ comic.name }}</h3>
         </div>
@@ -39,17 +40,17 @@
     </section>
 
     <!-- Recently Read Section -->
-    <section v-if="historyComics.length > 0" class="section">
+    <section v-if="historyComics.length > 0" class="section history">
       <div class="section-header">
         <h2 class="section-title">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-history-icon lucide-history"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
           Truyện vừa đọc
         </h2>
       </div>
-      <div class="comic-grid">
-        <div v-for="comic in historyComics" :key="'history-'+comic._id" class="comic-card">
+      <div class="horizontal-scroll">
+        <div v-for="comic in historyComics" :key="'history-'+comic._id" class="comic-card horizontal-card">
           <div class="comic-poster-container" @click="goToLastRead(comic)">
-            <img :src="comic.image" :alt="comic.name" class="comic-poster" />
+            <img :src="comic.image" :alt="comic.name" class="comic-poster" v-img-error />
             <div class="comic-overlay">
               <button class="read-button">Tiếp tục</button>
             </div>
@@ -60,9 +61,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eraser-icon lucide-eraser"><path d="M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21"/><path d="m5.082 11.09 8.828 8.828"/></svg>
             </button>
           </div>
-          <div class="comic-title-container">
-            <h3 class="comic-title">{{ comic.name }}</h3>
-          </div>
+          <h3 class="comic-title">{{ comic.name }}</h3>
         </div>
       </div>
     </section>
@@ -87,7 +86,7 @@
       <div :class="['comic-grid', { 'list-view': viewMode === 'list' }]">
         <div v-for="comic in comics" :key="comic._id" @click="goToListChapter(comic)" class="comic-card" :class="{ 'list-item': viewMode === 'list' }">
           <div class="comic-poster-container">
-            <img :src="comic.image" :alt="comic.name" class="comic-poster" />
+            <img :src="comic.image" :alt="comic.name" class="comic-poster" v-img-error />
           </div>
           <div class="comic-info">
             <h3 class="comic-title">{{ comic.name }}</h3>
@@ -110,7 +109,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, reactive, onMounted, nextTick, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -121,6 +120,29 @@ const favouriteComics = ref<any[]>([]);
 const search = ref("");
 const viewMode = ref<'grid' | 'list'>('grid');
 const historyComics = ref<any[]>([]);
+const scrollPositions = reactive<Record<string, number>>({});
+
+// Save scroll position before navigating away
+const saveScrollPosition = (section: string) => {
+  const container = document.querySelector(`.${section} .horizontal-scroll`);
+  if (container) {
+    scrollPositions[section] = container.scrollLeft;
+    sessionStorage.setItem(`scroll_${section}`, container.scrollLeft.toString());
+  }
+};
+
+// Restore scroll position when component is mounted
+const restoreScrollPosition = (section: string) => {
+  nextTick(() => {
+    const container = document.querySelector(`.${section} .horizontal-scroll`);
+    if (container) {
+      const savedPosition = sessionStorage.getItem(`scroll_${section}`);
+      if (savedPosition) {
+        container.scrollLeft = parseInt(savedPosition, 10);
+      }
+    }
+  });
+};
 
 const getComics = async () => {
   if (loading.value) return;
@@ -275,12 +297,98 @@ const removeFromHistory = (comic: any) => {
 
 onMounted(() => {
   getComics();
-  getFavouriteComics();
-  getHistoryComics();
+  
+  // Load and restore scroll positions after components are mounted
+  nextTick(() => {
+    getFavouriteComics();
+    getHistoryComics();
+    
+    // Restore scroll positions after a small delay to ensure DOM is ready
+    setTimeout(() => {
+      restoreScrollPosition('favorites');
+      restoreScrollPosition('history');
+    }, 100);
+  });
+  
+  // Add scroll event listeners
+  const favoritesContainer = document.querySelector('.favorites .horizontal-scroll');
+  const historyContainer = document.querySelector('.history .horizontal-scroll');
+  
+  const handleFavoritesScroll = () => saveScrollPosition('favorites');
+  const handleHistoryScroll = () => saveScrollPosition('history');
+  
+  if (favoritesContainer) {
+    favoritesContainer.addEventListener('scroll', handleFavoritesScroll);
+  }
+  if (historyContainer) {
+    historyContainer.addEventListener('scroll', handleHistoryScroll);
+  }
+  
+  // Cleanup event listeners when component is unmounted
+  onUnmounted(() => {
+    if (favoritesContainer) {
+      favoritesContainer.removeEventListener('scroll', handleFavoritesScroll);
+    }
+    if (historyContainer) {
+      historyContainer.removeEventListener('scroll', handleHistoryScroll);
+    }
+  });
 });
 </script>
 
 <style scoped>
+/* Horizontal Scroll Styles */
+.horizontal-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding: 0.5rem 0.5rem 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+  -webkit-overflow-scrolling: touch;
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.horizontal-card {
+  flex: 0 0 150px;
+  margin-bottom: 0;
+}
+
+.horizontal-card .comic-poster-container {
+  height: 225px;
+  width: 150px;
+}
+
+.horizontal-card .comic-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* Remove margin from section headers to save space */
+.section-header {
+  margin-bottom: 0.5rem !important;
+}
 /* Base Styles */
 :root {
   --primary-color: #4a6cf7;
@@ -337,17 +445,11 @@ onMounted(() => {
   transition: var(--transition);
 }
 
-/* Sections */
-.section {
-  margin: 2.5rem 0;
-}
-
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.2rem;
-  padding: 0 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .section-title {

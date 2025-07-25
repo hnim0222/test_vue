@@ -11,6 +11,7 @@
             :src="`${domainCDN}/${chapter?.chapter_path}/${image.image_file}`"
             class="w-full object-cover"
             :alt="`Image ${image.image_page}`"
+            v-img-error
         />
       </div>
 

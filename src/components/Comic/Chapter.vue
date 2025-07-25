@@ -1,59 +1,120 @@
 <template>
-  <div class="bottom-buttons">
-    <button @click="goBack" class="nav-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M18 15h-6v4l-7-7 7-7v4h6v6z"/>
-      </svg>
-      Quay lại
-    </button>
-    <button @click="goHome" class="nav-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-      </svg>
-      Trang chủ
-    </button>
-  </div>
-  <div class="comic-chapter">
-    <h1 class="comic-title">{{ comicName }}</h1>
-    <p>Chapter: {{ totalChapter }}</p>
-    <p v-if="selectedChapterName !== ''">Chapter hiện tại: {{ selectedChapterName }}</p>
-
-    <img :src="thumbnail" :alt="comicName" class="comic-thumbnail" style="border-radius: 5px; margin: 20px 0;"/>
-    <div style="padding-top: 20px; padding-bottom: 30px; font-size: 18px;">
-      <p>Tác giả: {{ author }}</p>
-      <p style="margin: 10px 0;">Thể loại: {{ category.join(', ') }}</p>
-      <p>Mô tả: {{ content }} </p>
+  <!-- Comic Info Card -->
+  <div class="comic-card">
+    <div class="comic-header">
+      <div class="comic-cover">
+        <img :src="thumbnail" :alt="comicName" class="comic-thumbnail" v-img-error />
+        <div class="chapter-badge" v-if="selectedChapterName">
+          Đang đọc: Ch. {{ selectedChapterName }}
+        </div>
+      </div>
+      <div class="comic-info">
+        <h1 class="comic-title">{{ comicName }}</h1>
+        <div class="meta-info">
+          <div class="meta-item">
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>{{ author }}</span>
+          </div>
+          <div class="meta-item" v-if="category.length > 0">
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+              <line x1="7" y1="7" x2="7.01" y2="7"></line>
+            </svg>
+            <div class="categories">
+              <span v-for="(cat, index) in category" :key="index" class="category-tag">
+                {{ cat }}
+              </span>
+            </div>
+          </div>
+          <div class="meta-item">
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>{{ totalChapter }} chương</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="comic-description">
+      <h3>Nội dung</h3>
+      <p class="description-text">{{ content || 'Không có mô tả' }}</p>
     </div>
 
-    <div v-if="loading">Loading chapters...</div>
-    <div v-else class="btn-area">
-      <button @click="selectedChapterName ? goToChapterDetail(selectedChapterApi, selectedChapterName) : goToChapterDetail(firstChapter.chapter_api_data, firstChapter.chapter_name)" class="btn-read">
-        {{ selectedChapterName ? `Đọc tiếp chap ${selectedChapterName}` : 'Đọc từ đầu' }}
-      </button>
-      <button class="list-icon" @click="showChapterModal = true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-logs"><path d="M13 12h8"/><path d="M13 18h8"/><path d="M13 6h8"/><path d="M3 12h1"/><path d="M3 18h1"/><path d="M3 6h1"/><path d="M8 12h1"/><path d="M8 18h1"/><path d="M8 6h1"/></svg></button>
-      <button
-      @click="toggleFavourite(dataForAdd)"
-      class="list-icon">
-        {{ isFavourite(comicSlug) ? '❤️' : '🤍' }}
-      </button>
-    </div>
-
+    <!-- Chapter List Modal -->
     <div v-if="showChapterModal" class="modal-overlay" @click.self="showChapterModal = false">
       <div class="modal-content">
-        <h2>Danh sách Chapter</h2>
-        <input type="text" v-model="searchQuery" placeholder="Search Chapter..."  class="search-input"/>
-        <ul>
-          <li v-for="(chapter, index) in filteredChapters"
-              ref="chapterRefs"
-              :key="index" @click="goToChapterDetail(chapter.chapter_api_data, chapter.chapter_name)"
-              :class="{ 'selected-chapter': chapter.chapter_name === selectedChapterName }">
-            Chapter {{ chapter.chapter_name }}
-          </li>
-        </ul>
-        <button @click="showChapterModal = false" class="list-icon" style="margin-top: 10px;">Đóng</button>
+        <div class="modal-header">
+          <h2>Danh sách Chương</h2>
+          <button @click="showChapterModal = false" class="close-btn">&times;</button>
+        </div>
+        <div class="search-container">
+          <input 
+            type="text" 
+            v-model="searchQuery" 
+            placeholder="Tìm kiếm chương..."
+            class="search-input"
+          />
+        </div>
+        <div class="chapter-list">
+          <div 
+            v-for="(chapter, index) in filteredChapters"
+            :key="index"
+            :ref="chapter.chapter_name === selectedChapterName ? 'activeChapter' : undefined"
+            @click="goToChapterDetail(chapter.chapter_api_data, chapter.chapter_name)"
+            :class="['chapter-item', { 'active': chapter.chapter_name === selectedChapterName }]"
+          >
+            <span>Chương {{ chapter.chapter_name }}</span>
+            <span v-if="chapter.chapter_name === selectedChapterName" class="current-badge">Đang đọc</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Bottom Navigation -->
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav" v-if="!loading">
+    <button @click="goBack" class="nav-btn" aria-label="Quay lại">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor">
+        <path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"/>
+      </svg>
+    </button>
+
+    <button
+        @click="selectedChapterName ? goToChapterDetail(selectedChapterApi, selectedChapterName) : goToChapterDetail(firstChapter.chapter_api_data, firstChapter.chapter_name)"
+        class="nav-btn"
+        aria-label="Đọc ngay"
+        style="display: flex; flex-direction: row; justify-content: center; align-items: center;"
+    >
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <polygon points="5 3 19 12 5 21 5 3"/>
+      </svg>
+      <span v-if="selectedChapterName">{{ selectedChapterName }}</span>
+      <span v-else>0</span>
+    </button>
+
+    <button class="nav-btn" @click="showChapterModal = true" aria-label="Danh sách chương">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor">
+        <path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/>
+        <path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/>
+      </svg>
+    </button>
+
+    <button class="nav-btn" @click="toggleFavourite(dataForAdd)" aria-label="Yêu thích">
+      <svg v-if="isFavourite(comicSlug)" width="24" height="24" fill="red" stroke="currentColor">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+      <svg v-else width="24" height="24" fill="none" stroke="currentColor">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    </button>
+  </nav>
+
 </template>
 
 <script setup lang="ts">
@@ -91,6 +152,7 @@ const selectedChapterApi = ref('');
 
 const firstChapter = computed(() => chapters.value.length > 0 ? chapters.value[0] : null);
 const favouriteComics = ref<any[]>([]);
+const activeChapter = ref<HTMLElement[]>([])
 
 const filteredChapters = computed(() => {
   return chapters.value.filter(chapter =>
@@ -143,17 +205,35 @@ onMounted(async () => {
   try {
     const response = await axios.get(`https://otruyenapi.com/v1/api/truyen-tranh/${props.comicSlug}`);
     const data = response.data;
-    dataForAdd.value = data.data.item || {};
+    
+    // Safely access data with null checks
+    if (data?.data?.item) {
+      const item = data.data.item;
+      dataForAdd.value = item;
 
-    comicName.value = data.data.item.name;
-    author.value = data.data.item.author[0];
-    category.value = data.data.item.category.map((cat: any) => cat.name);
-    content.value = data.data.seoOnPage.descriptionHead;
-    thumbnail.value = `https://img.otruyenapi.com/uploads/comics/${data.data.item.thumb_url}`;
-    totalChapter.value = data.data.item.chapters[0].server_data.slice(-1)[0].chapter_name;
+      // Safely set values with fallbacks
+      comicName.value = item.name || '';
+      author.value = item.author?.[0] || 'Unknown';
+      category.value = Array.isArray(item.category) 
+        ? item.category.map((cat: any) => cat?.name || '').filter(Boolean)
+        : [];
+      content.value = data.data.seoOnPage?.descriptionHead || '';
+      
+      if (item.thumb_url) {
+        thumbnail.value = `https://img.otruyenapi.com/uploads/comics/${item.thumb_url}`;
+      }
 
-    if (data.data && data.data.item?.chapters?.[0]?.server_data) {
-      chapters.value = data.data.item.chapters[0].server_data;
+      // Safely access chapters and server_data
+      if (item.chapters?.[0]?.server_data) {
+        const serverData = item.chapters[0].server_data;
+        chapters.value = serverData;
+        
+        // Set totalChapter if serverData has items
+        if (serverData.length > 0) {
+          const lastChapter = serverData[serverData.length - 1];
+          totalChapter.value = lastChapter.chapter_name || '1';
+        }
+      }
     }
 
     const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
@@ -168,6 +248,17 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+watch(showChapterModal, async (visible) => {
+  if (visible) {
+    await nextTick()
+    const el = activeChapter.value?.[0]
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
+})
+
 
 onMounted(getFavouriteComics);
 
@@ -205,14 +296,452 @@ const goToChapterDetail = (chapterApi: any, chapterName: string) => {
 </script>
 
 <style scoped>
+:root {
+  --primary: #4a6baf;
+  --primary-hover: #3a5a9f;
+  --text: #333;
+  --text-light: #666;
+  --border: #e0e0e0;
+  --bg-light: #f8f9fa;
+  --radius: 8px;
+}
+
+/* Layout */
+.top-nav {
+  position: sticky;
+  top: 0;
+  background: white;
+  padding: 1rem;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.top-nav .comic-title {
+  margin: 0;
+  font-size: 1.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.comic-card {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 1.5rem;
+  background: white;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  padding: 0.5rem 0.75rem;
+  z-index: 1000;
+  box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.nav-btn {
+  flex: 1;
+  max-width: 80px;
+  text-align: center;
+  background: none;
+  border: none;
+  color: #444;
+  font-size: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0.5rem;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.nav-btn:hover {
+  background: #f3f4f6;
+}
+
+.nav-btn svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  stroke-width: 2;
+  transition: stroke 0.2s;
+}
+
+.nav-btn.primary {
+  background-color: #4a6baf;
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-weight: 500;
+  max-width: none;
+}
+
+.nav-btn.primary:hover {
+  background-color: #3a5a9f;
+}
+
+.nav-btn.primary svg {
+  stroke: white;
+  fill: white;
+}
+
+.nav-label {
+  font-size: 0.65rem;
+  font-weight: 500;
+}
+
+
+/* Make sure content isn't hidden behind the bottom nav */
+.main-content {
+  padding-bottom: 4rem;
+}
+
+/* Navigation Buttons */
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.nav-text {
+  display: none;
+}
+
+/* Comic Header */
+.comic-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.comic-cover {
+  max-width: 300px;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.comic-thumbnail {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chapter-badge {
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.comic-info {
+  text-align: center;
+}
+
+.comic-title {
+  font-size: 1.75rem;
+  margin: 0 0 1rem;
+  color: var(--text);
+}
+
+.meta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-light);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.meta-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.category-tag {
+  background: var(--bg-light);
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+}
+
+/* Action Buttons */
+.action-buttons {
+  margin: 2rem 0;
+  background-color: #3b82f6;
+}
+
+.button-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.button-row .btn-primary {
+  flex: 1;
+  min-width: 200px;
+}
+
+.button-row .btn-icon {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: center;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn-icon {
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  background: #e9ecef;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-light);
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: var(--text);
+}
+
+.search-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(74, 107, 175, 0.2);
+}
+
+.chapter-list {
+  padding: 1rem 0;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.chapter-item {
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.chapter-item:hover {
+  background: var(--bg-light);
+}
+
+.chapter-item.active {
+  background: rgba(74, 107, 175, 0.1);
+  border-left-color: var(--primary);
+  font-weight: 500;
+}
+
+.current-badge {
+  background: var(--primary);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  font-weight: 500;
+}
+
+/* Comic Description */
+.comic-description {
+  background: var(--bg-light);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.comic-description h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--text);
+  font-size: 1.25rem;
+}
+
+.description-text {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--text-light);
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .comic-header {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+  }
+  
+  .comic-cover {
+    margin: 0;
+    flex: 0 0 250px;
+  }
+  
+  .comic-info {
+    text-align: left;
+    padding-left: 2rem;
+  }
+  
+  .meta-item {
+    justify-content: flex-start;
+  }
+  
+  .categories {
+    justify-content: flex-start;
+  }
+  
+  .action-buttons {
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .button-group {
+    margin-left: auto;
+  }
+  
+  .nav-text {
+    display: inline;
+  }
+}
+
+/* Loading State */
+.loading-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-light);
+}
+
+/* Remove old styles */
 .comic-chapter {
   padding: 20px;
 }
 
-.comic-title {
-  font-size: 22px;
-  font-weight: bold;
-}
 
 button {
   padding: 8px 12px;
