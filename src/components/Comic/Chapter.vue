@@ -118,9 +118,17 @@ const focusSelectedChapter = () => {
 const toggleFavourite = (comic: any) => {
   if (!comic?._id) return;
 
+  const comicToSave = {
+    _id: comic._id,
+    name: comic.name,
+    slug: comic.slug || props.comicSlug,
+    image: comic.image || thumbnail.value,
+    updatedAt: comic.updatedAt || new Date().toISOString()
+  };
+
   const index = favouriteComics.value.findIndex(fave => fave._id === comic._id);
   if (index === -1) {
-    favouriteComics.value.push(comic);
+    favouriteComics.value.push(comicToSave);
   } else {
     favouriteComics.value.splice(index, 1);
   }
@@ -185,6 +193,8 @@ const goToChapterDetail = (chapterApi: any, chapterName: string) => {
     } else {
       savedChapters.push({
         slug: props.comicSlug,
+        name: comicName.value,
+        image: thumbnail.value,
         chapterName,
         chapterApi
       });
