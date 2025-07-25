@@ -138,7 +138,7 @@ const goToChapter = () => {
       savedChapters.push({
         slug: slugComic,
         name: comicName,
-        image: `https://img.otruyenapi.com/uploads/comics/${dataForAdd.value.thumb_url}`,
+        image: `https://img.otruyenapi.com/uploads/comics/${slugComic}.jpg`,
         chapterName: currentChapter.chapter_name,
         chapterApi: currentChapter.chapter_api_data
       });
@@ -178,7 +178,7 @@ const goToPreviousChapter = () => {
       savedChapters.push({
         slug: slugComic,
         name: comicName,
-        image: `https://img.otruyenapi.com/uploads/comics/${dataForAdd.value.thumb_url}`,
+        image: `https://img.otruyenapi.com/uploads/comics/${slugComic}.jpg`,
         chapterName: previousChapter.chapter_name,
         chapterApi: previousChapter.chapter_api_data
       });
@@ -218,7 +218,7 @@ const goToNextChapter = () => {
       savedChapters.push({
         slug: slugComic,
         name: comicName,
-        image: `https://img.otruyenapi.com/uploads/comics/${dataForAdd.value.thumb_url}`,
+        image: `https://img.otruyenapi.com/uploads/comics/${slugComic}.jpg`,
         chapterName: nextChapter.chapter_name,
         chapterApi: nextChapter.chapter_api_data
       });
