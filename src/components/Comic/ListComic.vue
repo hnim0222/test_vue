@@ -57,7 +57,7 @@
               {{ comic.chapterName || 'Chương mới' }}
             </div>
             <button class="delete-button" @click.stop="removeFromHistory(comic)" title="Xoá khỏi lịch sử">
-              x
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eraser-icon lucide-eraser"><path d="M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21"/><path d="m5.082 11.09 8.828 8.828"/></svg>
             </button>
           </div>
           <div class="comic-title-container">
@@ -204,6 +204,12 @@ const isFavourite = (comic: any) => {
   return favouriteComics.value.some((fave: any) => fave._id === comic._id);
 };
 
+const handleImageError = (event: Event) => {
+  const img = event.target as HTMLImageElement;
+  img.src = '/comic-book.jpg'; // Using the default image from public folder
+  img.onerror = null; // Prevent infinite loop if the default image also fails to load
+};
+
 const goToListChapter = (comic: any) => {
   const savedChapters = JSON.parse(localStorage.getItem('savedChapters') || '[]');
   const savedChapter = savedChapters.find((ch: any) => ch.slug === comic.slug);
@@ -287,44 +293,6 @@ onMounted(() => {
   --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   --transition: all 0.3s ease;
   --min-tap-target: 44px; /* Minimum touch target size for better touch interaction */
-}
-
-/* Global touch improvements */
-@media (hover: none) {
-  /* Make all buttons and interactive elements more touch-friendly */
-  button, [role="button"], .comic-card, .view-option, .favourite-button, .read-button {
-    min-height: var(--min-tap-target);
-    min-width: var(--min-tap-target);
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Ensure text is selectable */
-  * {
-    -webkit-touch-callout: default;
-    -webkit-user-select: text;
-    -khtml-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
-  }
-  
-  /* Make sure links and buttons have enough space around them */
-  a, button, [role="button"] {
-    padding: 12px 16px;
-    margin: 4px;
-  }
-  
-  /* Improve form elements */
-  input, select, textarea, button {
-    font-size: 16px; /* Prevents iOS zoom on focus */
-  }
-  
-  /* Make sure the viewport doesn't scale */
-  @viewport {
-    width: device-width;
-    zoom: 1.0;
-  }
 }
 
 .comic-app {
@@ -509,43 +477,22 @@ onMounted(() => {
 /* Delete button for history items */
 .delete-button {
   position: absolute;
-  top: 8  px;
+  top: 8px;
   right: 8px;
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(255, 77, 79, 0.9);
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: white;
   transition: var(--transition);
-  opacity: 0;
+  opacity: 1;
   transform: scale(0.8);
   z-index: 2;
-  /* Always show on touch devices */
-  @media (hover: none) {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.comic-card:hover .delete-button {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.delete-button:hover {
-  background: #ff4d4f;
-  transform: scale(1.1) !important;
-}
-
-.delete-button svg {
-  width: 16px;
-  height: 16px;
-  stroke-width: 3px;
 }
 
 .favourite-button {
