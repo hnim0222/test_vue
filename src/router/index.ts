@@ -8,6 +8,7 @@ import Clock from "@/components/RealTimeClock.vue";
 import Ebook from '@/components/Ebook/Ebook.vue';
 import Episode from "@/components/Film/Episode.vue";
 import SearchComic from "@/components/Comic/SearchComic.vue";
+import Spotify from "@/components/Spotify.vue";
 
 const routes = [
     {
@@ -68,8 +69,14 @@ const routes = [
         name: 'ebook',
         component: Ebook,
         props: true
+    },
+    //spotify
+    {
+        path: '/spotify',
+        name: 'spotify',
+        component: Spotify,
+        props: true
     }
-
 
 ];
 

@@ -7,6 +7,7 @@
     <nav class="nav-buttons desktop-only">
       <button @click="goToComics">Comics</button>
       <button @click="goToFilms">Films</button>
+      <button @click="gotoSpotify">Spotify</button>
       <button @click="goHome">Home</button>
     </nav>
 
@@ -22,6 +23,7 @@
       <nav v-if="menuOpen" class="nav-buttons mobile-dropdown">
         <button @click="goToComics">Comics</button>
         <button @click="goToFilms">Films</button>
+        <button @click="gotoSpotify">Spotify</button>
         <button @click="goHome">Home</button>
       </nav>
     </transition>
@@ -49,6 +51,11 @@ const goToComics = () => {
 const goToFilms = () => {
   menuOpen.value = false;
   router.push('/film');
+};
+
+const gotoSpotify = () => {
+  menuOpen.value = false;
+  router.push('/spotify');
 };
 
 const toggleMenu = () => {
